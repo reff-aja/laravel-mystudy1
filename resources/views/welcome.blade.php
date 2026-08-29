@@ -30,22 +30,26 @@
 <body class="antialiased bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-x-hidden transition-colors duration-300">
 
     {{-- STICKY NAVBAR --}}
-    <nav class="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm z-50 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="#beranda" class="font-bold text-2xl text-indigo-600 dark:text-indigo-400 hover:scale-105 transition-transform cursor-pointer">📝 SmartDo</a>
+    <nav id="navbar" class="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm z-50 transition-all duration-500">
+        <div id="navbar-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ease-in-out">
+            <div class="relative flex justify-between h-16 items-center">
+                
+                {{-- ✨ REVISI: Bagian Kiri (Logo) didorong sedikit ke kanan dengan md:ml-8 lg:ml-12 ✨ --}}
+                <div class="flex-shrink-0 flex items-center md:ml-8 lg:ml-12 transition-all duration-500">
+                    <a href="#beranda" class="font-bold text-2xl text-indigo-600 dark:text-indigo-400 hover:scale-105 transition-transform cursor-pointer whitespace-nowrap">📝 SmartDo</a>
                 </div>
                 
-                <div class="hidden md:flex space-x-8">
+                {{-- Bagian Tengah (Menu Navigasi) --}}
+                <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8 whitespace-nowrap">
                     <a href="#beranda" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Beranda</a>
                     <a href="#fitur" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Fitur Utama</a>
                     <a href="#cara-kerja" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Cara Kerja</a>
                     <a href="#faq" class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">FAQ</a>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none rounded-lg text-sm p-2.5 transition">
+                {{-- Bagian Kanan (Tombol) --}}
+                <div class="flex-shrink-0 flex items-center gap-2 sm:gap-4 transition-all duration-500">
+                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none rounded-lg text-sm p-2 transition">
                         <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
                         </svg>
@@ -55,13 +59,13 @@
                     </button>
 
                     @if (Route::has('login'))
-                        <div class="space-x-2 sm:space-x-4">
+                        <div class="flex items-center space-x-2 sm:space-x-4">
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition">Dashboard</a>
                             @else
-                                <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition hidden sm:inline-block">Masuk</a>
+                                <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition hidden sm:inline-block whitespace-nowrap">Masuk</a>
                                 @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-4 py-2 rounded-md font-semibold transition shadow-sm hover:shadow-md">Daftar Gratis</a>
+                                    <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-4 py-2 rounded-md font-semibold transition shadow-sm hover:shadow-md whitespace-nowrap">Daftar Gratis</a>
                                 @endif
                             @endauth
                         </div>
@@ -184,8 +188,8 @@
             </div>
         </div>
     </div>
-                
-                {{-- ✨ KODE BARU: SESI FAQ LENGKAP (5 PERTANYAAN) ✨ --}}
+
+    {{-- FAQ --}}
     <div id="faq" class="py-20 bg-white dark:bg-gray-900 transition-colors duration-300 scroll-mt-24 border-t border-gray-100 dark:border-gray-800">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 reveal-element">
@@ -195,10 +199,8 @@
 
             <div class="space-y-4 reveal-element delay-100">
                 
-                {{-- FAQ 1: Apa itu SmartDo? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 1 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">Apa itu SmartDo?</span>
@@ -209,10 +211,8 @@
                     </div>
                 </div>
 
-                {{-- FAQ 2: Apakah gratis? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 2 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">Apakah aplikasi SmartDo ini gratis?</span>
@@ -223,10 +223,8 @@
                     </div>
                 </div>
 
-                {{-- FAQ 3: Apakah ini akan menurunkan kemampuan belajar saya? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 3 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">Apakah ini akan menurunkan kemampuan belajar saya?</span>
@@ -237,10 +235,8 @@
                     </div>
                 </div>
 
-                {{-- FAQ 4: Mengapa saya harus memilih ini? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 4 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">Mengapa saya harus memilih SmartDo?</span>
@@ -251,10 +247,8 @@
                     </div>
                 </div>
 
-                {{-- FAQ 5: Apakah data saya aman? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 5 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">Apakah data saya aman?</span>
@@ -265,17 +259,15 @@
                     </div>
                 </div>
 
-                {{-- FAQ 6 (Revisi): SmartDo kan menghindari distraksi, mengapa ada fitur musik? --}}
-                <div x-data="{ open: false }" 
-                     class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300"
-                     :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
+                {{-- FAQ 6 --}}
+                <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-indigo-500/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
                         <span class="font-bold text-gray-900 dark:text-white text-lg">SmartDo kan menghindari distraksi, mengapa ada fitur musik?</span>
-                        <svg :class="{'rotate-180': open}" class="w-5 h-5 text-indigo-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        <svg :class="{'rotate-180': open}" class="w-5 h-5 text-indigo-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-300" style="display: none;">
-                        <p>Distraksi yang kita basmi adalah hal-hal yang bikin hilang fokus seperti notifikasi medsos atau tab *browser* yang berlebihan. Nah, untuk urusan musik, SmartDo justru membebaskanmu untuk <strong>mengkustomisasi *playlist* sendiri</strong>! Mau lagu yang nge-beat, *hype*, atau genre apapun yang bikin kamu tetap melek dan semangat ngerjain tugas, semuanya bisa diatur sesuai *vibe* kamu.</p>
+                        <p>Distraksi yang kita basmi adalah hal-hal yang bikin hilang fokus seperti notifikasi medsos atau tab <i>browser</i> yang berlebihan. Nah, untuk urusan musik, SmartDo justru membebaskanmu untuk <strong>mengkustomisasi <i>playlist</i> sendiri</strong>! Mau lagu yang nge-beat, <i>hype</i>, atau genre apapun yang bikin kamu tetap melek dan semangat ngerjain tugas, semuanya bisa diatur sesuai <i>vibe</i> kamu.</p>
                     </div>
                 </div>
 
@@ -293,6 +285,17 @@
     {{-- Script Animasi Scroll & Logika Tombol Dark Mode --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            const navContainer = document.getElementById('navbar-container');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 20) {
+                    navContainer.classList.remove('max-w-7xl');
+                    navContainer.classList.add('max-w-5xl'); 
+                } else {
+                    navContainer.classList.add('max-w-7xl');
+                    navContainer.classList.remove('max-w-5xl'); 
+                }
+            });
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Playlist Fokus - SmartDo</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="font-sans antialiased bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+
+    {{-- NAVBAR ATAS --}}
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+            <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-indigo-600 dark:text-indigo-400 flex items-center">
+                SmartDo
+            </a>
+            <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition-colors">
+                &larr; Kembali ke Dashboard
+            </a>
+        </div>
+    </nav>
+
+    {{-- KONTEN UTAMA PLAYLIST --}}
+    <main class="max-w-4xl mx-auto px-4 py-10">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus 🎧</h1>
+            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari Spotify atau YouTube agar sesi produktivitasmu makin maksimal.</p>
+        </div>
+
+        {{-- Form Input Link Playlist --}}
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 mb-8">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambahkan Link Playlist-mu Kesini Yuk</h2>
+            <form action="{{ route('playlist.save') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
+                @csrf
+                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link Spotify atau YouTube di sini..." required class="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white">
+                <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-colors shadow-md">
+                    Simpan Playlist
+                </button>
+            </form>
+            @if(session('success'))
+                <p class="text-xs text-green-600 dark:text-green-400 mt-2 font-medium">{{ session('success') }}</p>
+            @endif
+        </div>
+
+        {{-- Area Pemutar Musik Dinamis (Embed Player) --}}
+        <div class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-48 h-48 bg-white opacity-10 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <span class="bg-white/20 text-indigo-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Pemutar Aktif</span>
+                <h3 class="text-2xl font-extrabold mt-3 mb-6">Sesi Musik Fokusmu</h3>
+
+                @php
+                    $url = Auth::user()->playlist_url;
+                    $embedUrl = null;
+
+                    if ($url) {
+                        // Ubah link Spotify biasa menjadi link embed Spotify
+                        if (str_contains($url, 'spotify.com')) {
+                            $embedUrl = str_replace('open.spotify.com/', 'open.spotify.com/embed/', explode('?', $url)[0]);
+                        } 
+                        // Ubah link YouTube biasa/watch menjadi link embed YouTube
+                        elseif (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {
+                            if (str_contains($url, 'watch?v=')) {
+                                parse_str(parse_url($url, PHP_URL_QUERY), $ytParams);
+                                if (isset($ytParams['v'])) {
+                                    $embedUrl = 'https://www.youtube.com/embed/' . $ytParams['v'];
+                                }
+                            } elseif (str_contains($url, 'youtu.be/')) {
+                                $path = parse_url($url, PHP_URL_PATH);
+                                $embedUrl = 'https://www.youtube.com/embed' . $path;
+                            }
+                        }
+                    }
+                @endphp
+
+                @if($embedUrl)
+                    <div class="w-full rounded-2xl overflow-hidden shadow-lg bg-black/30">
+                        @if(str_contains($embedUrl, 'spotify.com'))
+                            <iframe src="{{ $embedUrl }}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        @elseif(str_contains($embedUrl, 'youtube.com'))
+                            <iframe width="100%" height="250" src="{{ $embedUrl }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        @endif
+                    </div>
+                @else
+                    <div class="text-center py-10 bg-white/10 rounded-2xl border border-white/10">
+                        <p class="text-sm text-indigo-200">Belum ada link playlist yang disimpan. Masukkan tautan Spotify atau YouTube di atas agar musiknya bisa diputar!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

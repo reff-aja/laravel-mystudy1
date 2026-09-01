@@ -13,4 +13,12 @@ class Task extends Model
         'title',
         'is_completed'
     ];
+
+    protected $guarded = [];
+
+    // Relasi: Setiap task dimiliki oleh satu user
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

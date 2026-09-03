@@ -199,7 +199,7 @@
             {{-- KOLOM KANAN (Widgets) - Span 1 Kolom --}}
             <div class="flex flex-col gap-6">
                 
-                {{-- Widget Musik Lo-Fi (Sinkron dengan Playlist) --}}
+                {{-- Widget Musik Lo-Fi (Akses ke Halaman Playlist) --}}
                 <div class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
                     <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
                     
@@ -214,7 +214,7 @@
                                 @endif
                             </p>
                         </div>
-                        <a href="{{ route('playlist') }}" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:scale-110 transition-transform" title="Kelola Playlist">
+                        <a href="{{ route('playlist') }}" class="w-10 h-10 bg-white/25 backdrop-blur-md rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md" title="Kelola Playlist">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
                         </a>
                     </div>
@@ -222,32 +222,56 @@
                     <div class="relative z-10">
                         <p class="text-xs text-indigo-200 mb-4">
                             @if(Auth::user()->playlist_url)
-                                Link Spotify/YouTube tersimpan. Putar musik langsung di halaman Playlist!
+                                Tautan Spotify/YouTube tersimpan. Gunakan Floating Player di pojok kanan bawah atau kelola di menu khusus!
                             @else
                                 Belum ada tautan musik. Klik ikon musik di atas untuk menambahkannya.
                             @endif
                         </p>
 
                         <a href="{{ route('playlist') }}" class="block w-full py-2.5 bg-white text-indigo-900 rounded-xl font-bold text-center text-sm shadow-md hover:bg-indigo-50 transition-colors">
-                            Buka Pemutar Musik 🎧
+                            Kelola Pemutar Musik 🎧
                         </a>
                     </div>
                 </div>
 
-                {{-- Widget Riwayat Produktivitas --}}
+                {{-- Widget Aktivitas 7 Hari Terakhir & Streak (Dinamis dari Database) --}}
                 <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
-                    <h3 class="font-bold text-gray-900 dark:text-white mb-4">Aktivitas 7 Hari Terakhir</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-900 dark:text-white flex items-center text-sm">
+                            <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13h2v7H3v-7zm4-6h2v13H7V7zm4-4h2v17h-2V3zm4 9h2v8h-2v-8zm4-5h2v13h-2V7z"></path>
+                            </svg>
+                            Aktivitas 7 Hari Terakhir
+                        </h3>
+
+                        {{-- Badge Streak --}}
+                        <div class="flex items-center space-x-1.5 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full text-amber-600 dark:text-amber-400 text-xs font-bold" title="Streak harian berturut-turut">
+                            <svg class="w-4 h-4 text-amber-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span>{{ $streak ?? 0 }} Hari Streak</span>
+                        </div>
+                    </div>
                     
                     <div class="grid grid-cols-7 gap-2">
-                        <div class="h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400">S</div>
-                        <div class="h-10 bg-indigo-200 dark:bg-indigo-800/50 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-700 dark:text-indigo-300">S</div>
-                        <div class="h-10 bg-indigo-500 rounded-lg flex items-center justify-center text-xs font-bold text-white shadow-md shadow-indigo-500/30">R</div>
-                        <div class="h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400">K</div>
-                        <div class="h-10 bg-indigo-400 rounded-lg flex items-center justify-center text-xs font-bold text-white">J</div>
-                        <div class="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-xs font-bold text-gray-400">S</div>
-                        <div class="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-xs font-bold text-gray-400">M</div>
+                        @foreach($activityDays as $day)
+                            <div class="flex flex-col items-center">
+                                <div class="w-full h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all {{ $day['active'] ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30 scale-105' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600' }}" title="{{ $day['completed_count'] }} tugas selesai pada {{ $day['date'] }}">
+                                    {{ $day['completed_count'] > 0 ? $day['completed_count'] : $day['day'][0] }}
+                                </div>
+                                <span class="text-[10px] text-gray-400 mt-1.5 font-medium">{{ $day['day'] }}</span>
+                            </div>
+                        @endforeach
                     </div>
-                    <p class="text-xs text-center text-gray-500 mt-4">Hari Rabu adalah hari paling produktifmu!</p>
+                    
+                    <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
+                        @if(($streak ?? 0) > 0)
+                            Pertahankan konsistensimu setiap hari! 
+                        @else
+                            Selesaikan tugas pertamamu hari ini untuk memulai streak!
+                        @endif
+                    </p>
                 </div>
 
             </div>
@@ -288,7 +312,34 @@
                     }
                 }
             });
+
+            // AJAX Script untuk form tambah tugas agar musik tidak terhenti
+            const taskForm = document.querySelector('form[action="{{ route("tasks.store") }}"]');
+            if (taskForm) {
+                taskForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    let formData = new FormData(taskForm);
+
+                    fetch(taskForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            }
         });
     </script>
+
+    {{-- Pemutar Musik Mengambang (Floating Player) agar aktif di semua halaman --}}
+    @include('components.floating-player')
 </body>
 </html>

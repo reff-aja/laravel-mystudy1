@@ -5,6 +5,7 @@ use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,10 +13,10 @@ Route::get('/', function () {
 
 // 🛡️ KEAMANAN: middleware('auth') memastikan halaman ini hanya bisa diakses kalau sudah login
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Mengubah rute dashboard bawaan Breeze untuk menggunakan TaskController
     Route::get('/dashboard', [TaskController::class, 'index'])->name('dashboard');
-    
+
     // Rute untuk menyimpan tugas baru
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 
@@ -52,6 +53,66 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/dashboard', function (Request $request) {
+        $user = Auth::user();
+        $filter = $request->query('filter', 'all');
+
+        // Query tugas berdasarkan filter
+        $query = $user->tasks();
+        if ($filter === 'active') {
+            $query->where('is_completed', false);
+        } elseif ($filter === 'completed') {
+            $query->where('is_completed', true);
+        }
+        $tasks = $query->latest()->get();
+
+        // 1. Data Aktivitas 7 Hari Terakhir dari Database
+        $activityDays = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $count = $user->tasks()
+                ->where('is_completed', true)
+                ->whereDate('updated_at', $date)
+                ->count();
+
+            $activityDays[] = [
+                'day' => $date->translatedFormat('D'),
+                'date' => $date->format('Y-m-d'),
+                'completed_count' => $count,
+                'active' => $count > 0
+            ];
+        }
+
+        // 2. Sistem Streak (Hari berturut-turut menyelesaikan tugas)
+        $streak = 0;
+        $checkDate = Carbon::today();
+
+        if ($user->tasks()->where('is_completed', true)->whereDate('updated_at', $checkDate)->count() == 0) {
+            $checkDate->subDay();
+        }
+
+        while (true) {
+            $hasCompleted = $user->tasks()
+                ->where('is_completed', true)
+                ->whereDate('updated_at', $checkDate)
+                ->exists();
+
+            if ($hasCompleted) {
+                $streak++;
+                $checkDate->subDay();
+            } else {
+                break;
+            }
+        }
+
+        return view('dashboard', [
+            'tasks' => $tasks,
+            'currentFilter' => $filter,
+            'activityDays' => $activityDays,
+            'streak' => $streak
+        ]);
+    })->middleware(['auth', 'verified'])->name('dashboard');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

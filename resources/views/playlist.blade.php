@@ -62,9 +62,11 @@
                     $embedUrl = null;
 
                     if ($url) {
-                        // Ubah link Spotify biasa menjadi link embed Spotify
+                        // Ubah link Spotify menjadi link embed resmi
                         if (str_contains($url, 'spotify.com')) {
-                            $embedUrl = str_replace('open.spotify.com/', 'open.spotify.com/embed/', explode('?', $url)[0]);
+                            $cleanUrl = explode('?', $url)[0];
+                            $cleanUrl = preg_replace('/\/intl-[a-z]{2}\//', '/', $cleanUrl);
+                            $embedUrl = str_replace('open.spotify.com/', 'open.spotify.com/embed/', $cleanUrl);
                         } 
                         // Ubah link YouTube biasa/watch menjadi link embed YouTube
                         elseif (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {

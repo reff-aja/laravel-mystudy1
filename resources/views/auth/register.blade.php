@@ -72,7 +72,7 @@
             
             {{-- Logo khusus versi Mobile (Tampil jika layar kecil) --}}
             <div class="lg:hidden text-center mb-8">
-                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]">📝 SmartDo</a>
+                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]"> MyStudy</a>
             </div>
 
             <div class="mb-10 text-center lg:text-left">

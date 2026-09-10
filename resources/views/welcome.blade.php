@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SmartDo - Selesaikan Tugas Lebih Cepat</title>
+    <title>MyStudy - Selesaikan Tugas Lebih Cepat</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -36,7 +36,7 @@
                 
                 {{-- ✨ REVISI: Bagian Kiri (Logo) didorong sedikit ke kanan dengan md:ml-8 lg:ml-12 ✨ --}}
                 <div class="flex-shrink-0 flex items-center md:ml-8 lg:ml-12 transition-all duration-500">
-                    <a href="#beranda" class="font-bold text-2xl text-[#68C7EC] hover:scale-105 transition-transform cursor-pointer whitespace-nowrap">📝 SmartDo</a>
+                    <a href="#beranda" class="font-bold text-2xl text-[#68C7EC] hover:scale-105 transition-transform cursor-pointer whitespace-nowrap">MyStudy</a>
                 </div>
                 
                 {{-- Bagian Tengah (Menu Navigasi) --}}
@@ -82,7 +82,7 @@
             <span class="block text-[#68C7EC]">Lebih Rapi & Terstruktur</span>
         </h1>
         <p class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            SmartDo adalah aplikasi pencatat tugas modern. Catat pekerjaanmu, atur prioritas, dan pantau produktivitasmu dengan antarmuka yang bersih dan cepat.
+            MyStudy adalah aplikasi pencatat tugas modern. Catat pekerjaanmu, atur prioritas, dan pantau produktivitasmu dengan antarmuka yang bersih dan cepat.
         </p>
         <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             <div class="rounded-md shadow">

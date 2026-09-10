@@ -27,7 +27,7 @@
 
         <div class="relative z-10">
             <a href="/" class="font-extrabold text-3xl hover:scale-105 transition-transform inline-block text-[#68C7EC]">
-                📝 SmartDo
+                 MyStudy
             </a>
         </div>
         

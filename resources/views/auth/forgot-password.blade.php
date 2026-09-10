@@ -26,7 +26,7 @@
 
         <div class="relative z-10">
             <a href="/" class="font-extrabold text-3xl hover:scale-105 transition-transform inline-block text-[#68C7EC]">
-                📝 SmartDo
+                MyStudy
             </a>
         </div>
         
@@ -55,7 +55,7 @@
         </div>
         
         <div class="relative z-10 text-sm text-gray-400">
-            &copy; 2026 SmartDo App. Dibuat untuk Portofolio.
+            &copy; 2026 MyStudy App. Dibuat untuk Portofolio.
         </div>
     </div>
 
@@ -65,7 +65,7 @@
             
             {{-- Logo khusus versi Mobile --}}
             <div class="lg:hidden text-center mb-8">
-                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]">📝 SmartDo</a>
+                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]">MyStudy</a>
             </div>
 
             <div class="mb-8 text-center lg:text-left">

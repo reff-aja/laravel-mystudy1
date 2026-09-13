@@ -14,6 +14,76 @@
             document.documentElement.classList.remove('dark');
         }
     </script>
+    <style>
+        @keyframes modalIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, calc(-50% + 24px)) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes modalOut {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, calc(-50% + 18px)) scale(0.96);
+            }
+        }
+
+        @keyframes backdropIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes backdropOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .delete-modal-backdrop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .delete-modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+            animation: backdropIn 0.2s ease;
+        }
+
+        .delete-modal-backdrop.hide {
+            animation: backdropOut 0.18s ease forwards;
+        }
+
+        .delete-confirm-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.96);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .delete-confirm-card.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+            animation: modalIn 0.22s ease;
+        }
+
+        .delete-confirm-card.hide {
+            animation: modalOut 0.2s ease forwards;
+        }
+    </style>
 </head>
 <body class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen transition-colors duration-300" x-data="{ userDropdown: false }">
 
@@ -69,6 +139,28 @@
             </div>
         </div>
     </nav>
+
+    <div id="delete-modal-backdrop" class="delete-modal-backdrop fixed inset-0 z-40 bg-[#000F0F]/60 backdrop-blur-sm" style="display: none;"></div>
+
+    <div id="delete-confirm-toast" class="delete-confirm-card z-50 w-[min(92vw,420px)] rounded-3xl border border-red-200/80 dark:border-red-500/30 bg-white/95 dark:bg-[#001818]/95 shadow-[0_25px_80px_rgba(239,68,68,0.18)] p-5 ring-1 ring-black/5 dark:ring-white/5" style="display: none;">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center text-red-500 dark:text-red-400 shadow-inner shadow-red-200/50 dark:shadow-red-500/10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 3h.01M5.43 19h13.14a2 2 0 001.94-2.54L14.4 4.7a2 2 0 00-3.8 0L3.49 16.46A2 2 0 005.43 19z"></path></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-base font-bold text-gray-900 dark:text-white">Hapus tugas?</p>
+                <p id="delete-confirm-text" class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300">Apakah Anda yakin ingin menghapus tugas ini?</p>
+                <div class="mt-5 flex justify-end gap-2.5">
+                    <button id="delete-cancel-btn" type="button" class="px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+                        Batal
+                    </button>
+                    <button id="delete-confirm-btn" type="button" class="px-4 py-2.5 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-all duration-200 shadow-lg shadow-red-500/20 hover:shadow-red-500/30">
+                        Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- AREA UTAMA --}}
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -150,7 +242,7 @@
                     {{-- Wrapper List --}}
                     <div class="space-y-4">
                         @forelse($tasks as $task)
-                            <div class="group flex items-center justify-between p-4 bg-gray-50 dark:bg-[#000F0F] rounded-2xl border border-gray-100 dark:border-[#002525] hover:border-[#68C7EC]/50 dark:hover:border-[#68C7EC]/50 transition-colors">
+                            <div class="task-item group flex items-center justify-between p-4 bg-gray-50 dark:bg-[#000F0F] rounded-2xl border border-gray-100 dark:border-[#002525] hover:border-[#68C7EC]/50 dark:hover:border-[#68C7EC]/50 transition-colors">
                                 <div class="flex items-center space-x-4 flex-1">
                                     {{-- Form Update Status Selesai/Belum --}}
                                     <form action="{{ route('tasks.update', $task->id) }}" method="POST">
@@ -164,7 +256,7 @@
                                     </form>
 
                                     <div class="flex-1">
-                                        <p class="text-base font-semibold {{ $task->is_completed ? 'text-gray-400 dark:text-gray-600 line-through' : 'text-gray-900 dark:text-white' }}">
+                                        <p class="task-title text-base font-semibold {{ $task->is_completed ? 'text-gray-400 dark:text-gray-600 line-through' : 'text-gray-900 dark:text-white' }}">
                                             {{ $task->title }}
                                         </p>
                                     </div>
@@ -178,10 +270,10 @@
                                     </a>
 
                                     {{-- Tombol Hapus --}}
-                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST">
+                                    <form class="delete-task-form" data-task-title="{{ $task->title }}" action="{{ route('tasks.destroy', $task->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-500/10">
+                                        <button type="button" class="delete-task-button text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-500/10">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </form>
@@ -276,32 +368,101 @@
             const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
             const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                themeToggleLightIcon.classList.remove('hidden');
-            } else {
-                themeToggleDarkIcon.classList.remove('hidden');
+            if (themeToggleBtn && themeToggleDarkIcon && themeToggleLightIcon) {
+                if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    themeToggleLightIcon.classList.remove('hidden');
+                } else {
+                    themeToggleDarkIcon.classList.remove('hidden');
+                }
+
+                themeToggleBtn.addEventListener('click', function() {
+                    themeToggleDarkIcon.classList.toggle('hidden');
+                    themeToggleLightIcon.classList.toggle('hidden');
+
+                    if (localStorage.getItem('color-theme')) {
+                        if (localStorage.getItem('color-theme') === 'light') {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('color-theme', 'dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('color-theme', 'light');
+                        }
+                    } else {
+                        if (document.documentElement.classList.contains('dark')) {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('color-theme', 'light');
+                        } else {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('color-theme', 'dark');
+                        }
+                    }
+                });
             }
 
-            themeToggleBtn.addEventListener('click', function() {
-                themeToggleDarkIcon.classList.toggle('hidden');
-                themeToggleLightIcon.classList.toggle('hidden');
+            const deleteToast = document.getElementById('delete-confirm-toast');
+            const deleteBackdrop = document.getElementById('delete-modal-backdrop');
+            const deleteToastText = document.getElementById('delete-confirm-text');
+            const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+            let pendingDeleteForm = null;
 
-                if (localStorage.getItem('color-theme')) {
-                    if (localStorage.getItem('color-theme') === 'light') {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('color-theme', 'light');
+            if (deleteToast && deleteBackdrop && deleteToastText && deleteConfirmBtn && deleteCancelBtn) {
+                function showDeleteToast(taskTitle) {
+                    deleteToastText.textContent = `Apakah Anda yakin ingin menghapus tugas "${taskTitle}"?`;
+                    deleteBackdrop.style.display = 'block';
+                    deleteToast.style.display = 'block';
+                    deleteBackdrop.classList.remove('hide');
+                    deleteBackdrop.classList.add('show');
+                    deleteToast.classList.remove('hide');
+                    deleteToast.classList.add('show');
+                }
+
+                function hideDeleteToast() {
+                    deleteBackdrop.classList.remove('show');
+                    deleteBackdrop.classList.add('hide');
+                    deleteToast.classList.remove('show');
+                    deleteToast.classList.add('hide');
+
+                    setTimeout(() => {
+                        deleteBackdrop.style.display = 'none';
+                        deleteToast.style.display = 'none';
+                        deleteBackdrop.classList.remove('hide');
+                        deleteToast.classList.remove('hide');
+                    }, 200);
+                }
+
+                deleteCancelBtn.addEventListener('click', function() {
+                    pendingDeleteForm = null;
+                    hideDeleteToast();
+                });
+
+                deleteBackdrop.addEventListener('click', function() {
+                    pendingDeleteForm = null;
+                    hideDeleteToast();
+                });
+
+                deleteConfirmBtn.addEventListener('click', function() {
+                    if (pendingDeleteForm) {
+                        pendingDeleteForm.submit();
                     }
-                } else {
-                    if (document.documentElement.classList.contains('dark')) {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('color-theme', 'light');
-                    } else {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    }
+                });
+            }
+
+            const deleteForms = document.querySelectorAll('.delete-task-form');
+            deleteForms.forEach(function(form) {
+                const deleteButton = form.querySelector('.delete-task-button');
+
+                if (deleteButton) {
+                    deleteButton.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const taskTitle = form.dataset.taskTitle || 'tugas ini';
+                        pendingDeleteForm = form;
+                        if (deleteToast && deleteBackdrop && deleteToastText && deleteConfirmBtn && deleteCancelBtn) {
+                            showDeleteToast(taskTitle);
+                        } else {
+                            form.submit();
+                        }
+                    });
                 }
             });
 

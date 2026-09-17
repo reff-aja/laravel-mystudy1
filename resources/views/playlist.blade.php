@@ -19,7 +19,7 @@
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
             <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-[#68C7EC] flex items-center">
-                SmartDo
+                MyStudy
             </a>
             <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#68C7EC] transition-colors">
                 &larr; Kembali ke Dashboard
@@ -30,8 +30,8 @@
     {{-- KONTEN UTAMA PLAYLIST --}}
     <main class="max-w-4xl mx-auto px-4 py-10">
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus 🎧</h1>
-            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari Spotify atau YouTube agar sesi produktivitasmu makin maksimal.</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus</h1>
+            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari YouTube langsung di sini, atau buka Spotify melalui pemutar resminya.</p>
         </div>
 
         {{-- Form Input Link Playlist --}}
@@ -39,7 +39,7 @@
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambahkan Link Playlist-mu Kesini Yuk</h2>
             <form action="{{ route('playlist.save') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
                 @csrf
-                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link Spotify atau YouTube di sini..." required class="flex-1 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#68C7EC] text-gray-900 dark:text-white outline-none">
+                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link YouTube atau Spotify di sini..." required class="flex-1 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#68C7EC] text-gray-900 dark:text-white outline-none">
                 <button type="submit" class="px-6 py-3 bg-[#68C7EC] hover:opacity-90 text-[#000F0F] rounded-xl font-bold text-sm transition-colors shadow-md">
                     Simpan Playlist
                 </button>
@@ -60,9 +60,11 @@
                 @php
                     $url = Auth::user()->playlist_url;
                     $embedUrl = null;
+                    $isSpotify = false;
 
                     if ($url) {
                         if (str_contains($url, 'spotify.com')) {
+                            $isSpotify = true;
                             $cleanUrl = explode('?', $url)[0];
                             $cleanUrl = preg_replace('/\/intl-[a-z]{2}\//', '/', $cleanUrl);
                             $embedUrl = str_replace('open.spotify.com/', 'open.spotify.com/embed/', $cleanUrl);
@@ -76,6 +78,11 @@
                             } elseif (str_contains($url, 'youtu.be/')) {
                                 $path = parse_url($url, PHP_URL_PATH);
                                 $embedUrl = 'https://www.youtube.com/embed' . $path;
+                            } elseif (str_contains($url, 'youtube.com/playlist')) {
+                                parse_str(parse_url($url, PHP_URL_QUERY), $ytParams);
+                                if (isset($ytParams['list'])) {
+                                    $embedUrl = 'https://www.youtube.com/embed/videoseries?list=' . urlencode($ytParams['list']);
+                                }
                             }
                         }
                     }
@@ -83,15 +90,21 @@
 
                 @if($embedUrl)
                     <div class="w-full rounded-2xl overflow-hidden shadow-lg bg-black/40 border border-[#68C7EC]/10">
-                        @if(str_contains($embedUrl, 'spotify.com'))
+                        @if($isSpotify)
                             <iframe src="{{ $embedUrl }}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                         @elseif(str_contains($embedUrl, 'youtube.com'))
                             <iframe width="100%" height="250" src="{{ $embedUrl }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         @endif
                     </div>
+                    @if($isSpotify)
+                        <div class="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+                            <p class="text-sm leading-6 text-amber-100">Spotify membatasi pemutaran penuh di dalam embed. Untuk mendengarkan lagu sampai selesai, buka pemutar resmi Spotify.</p>
+                            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-xl bg-white px-4 py-2 text-center text-sm font-bold text-[#000F0F] transition-opacity hover:opacity-90">Buka di Spotify</a>
+                        </div>
+                    @endif
                 @else
                     <div class="text-center py-10 bg-[#001818]/60 rounded-2xl border border-[#68C7EC]/10">
-                        <p class="text-sm text-gray-300">Belum ada link playlist yang disimpan. Masukkan tautan Spotify atau YouTube di atas agar musiknya bisa diputar!</p>
+                        <p class="text-sm text-gray-300">Belum ada link playlist yang tersimpan atau format link belum didukung. Gunakan link YouTube untuk pemutaran penuh langsung di web.</p>
                     </div>
                 @endif
             </div>

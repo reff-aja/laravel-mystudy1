@@ -11,10 +11,19 @@ class Task extends Model
     protected $fillable = [
         'user_id',
         'title',
-        'is_completed'
+        'is_completed',
+        'reminder_at',
     ];
 
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'is_completed' => 'boolean',
+            'reminder_at' => 'datetime',
+        ];
+    }
 
     // Relasi: Setiap task dimiliki oleh satu user
     public function user()

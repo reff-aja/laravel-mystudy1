@@ -38,12 +38,14 @@ class TaskController extends Controller
         // 🛡️ KEAMANAN: Validasi ketat! Judul tugas wajib diisi & maksimal 255 karakter
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
+            'reminder_at' => 'nullable|date|after:now',
         ]);
 
         // Menyimpan tugas ke database
         Task::create([
             'user_id' => Auth::id(), // 🛡️ Otomatis mengaitkan tugas dengan user yang sedang login
             'title' => $validatedData['title'],
+            'reminder_at' => $validatedData['reminder_at'] ?? null,
         ]);
 
         // Kembali ke halaman sebelumnya dengan pesan sukses

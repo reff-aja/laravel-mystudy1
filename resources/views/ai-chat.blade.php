@@ -26,7 +26,7 @@
             </div>
             
             <h1 class="text-3xl font-extrabold mb-2 text-[#68C7EC]">
-                SmartDo AI Assistant
+                MyStudy AI Assistant
             </h1>
             <h2 class="text-xl font-bold mb-4 text-gray-700 dark:text-gray-200">Coming Soon 🚀</h2>
             

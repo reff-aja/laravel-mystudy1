@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Daftar Akun - SmartDo</title>
+    <title>Daftar Akun - MyStudy</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -27,7 +27,7 @@
 
         <div class="relative z-10">
             <a href="/" class="font-extrabold text-3xl hover:scale-105 transition-transform inline-block text-[#68C7EC]">
-                📝 SmartDo
+                Mystudy
             </a>
         </div>
         
@@ -62,7 +62,7 @@
         </div>
         
         <div class="relative z-10 text-sm text-gray-400">
-            &copy; 2026 SmartDo App. Dibuat untuk Portofolio.
+            &copy; 2026 MyStudy App. Dibuat untuk Portofolio.
         </div>
     </div>
 

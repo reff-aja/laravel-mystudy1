@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Masuk - SmartDo</title>
+    <title>Masuk - MyStudy</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -62,7 +62,7 @@
         </div>
         
         <div class="relative z-10 text-sm text-gray-400">
-            &copy; 2026 SmartDo App. Dibuat untuk Portofolio.
+            &copy; 2026 MyStudy App. Dibuat untuk Portofolio.
         </div>
     </div>
 
@@ -72,7 +72,7 @@
             
             {{-- Logo khusus versi Mobile --}}
             <div class="lg:hidden text-center mb-8">
-                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]">📝 SmartDo</a>
+                <a href="/" class="font-extrabold text-3xl text-[#68C7EC]">MyStudy</a>
             </div>
 
             <div class="mb-10 text-center lg:text-left">

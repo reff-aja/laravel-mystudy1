@@ -22,7 +22,7 @@
 @endphp
 
 @if($embedUrl)
-    <div x-data="{ minimized: false }" class="fixed bottom-4 right-4 z-50 bg-gray-900/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl text-white overflow-hidden transition-all duration-300" :class="minimized ? 'w-16 h-16 rounded-full flex items-center justify-center cursor-pointer' : 'w-80 sm:w-96'">
+    <div x-data="{ minimized: false }" class="floating-player fixed bottom-4 left-4 right-4 z-50 w-full max-w-96 h-[140px] bg-gray-900/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl text-white overflow-hidden transition-[width,height,border-radius] duration-500 ease-in-out sm:left-auto" :class="minimized ? 'w-16 sm:w-16 h-16 right-4 left-auto rounded-full flex items-center justify-center cursor-pointer' : 'sm:w-96'">
         
         {{-- Tombol Minimize / Expand --}}
         <div class="absolute top-2 right-2 z-20 flex items-center space-x-1">
@@ -33,7 +33,7 @@
         </div>
 
         {{-- Tampilan Normal (Expanded) --}}
-        <div x-show="!minimized" class="p-4">
+        <div x-show="!minimized" x-transition:enter="transition ease-out duration-500 delay-150" x-transition:enter-start="opacity-0 scale-95 blur-sm" x-transition:enter-end="opacity-100 scale-100 blur-0" x-transition:leave="transition ease-in duration-400" x-transition:leave-start="opacity-100 scale-100 blur-0" x-transition:leave-end="opacity-0 scale-90 blur-sm" class="p-4 origin-center will-change-transform">
             <div class="flex items-center space-x-2 mb-2">
                 <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></div>
                 <span class="text-xs font-bold uppercase tracking-wider text-indigo-300">Floating Focus Player 🎧</span>
@@ -49,7 +49,7 @@
         </div>
 
         {{-- Tampilan Minim (Lingkaran Musik di Pojok) --}}
-        <div x-show="minimized" @click="minimized = false" style="display: none;" class="w-full h-full flex items-center justify-center cursor-pointer" title="Buka Pemutar Musik">
+        <div x-show="minimized" x-transition:enter="transition ease-out duration-500 delay-250" x-transition:enter-start="opacity-0 scale-50 blur-sm" x-transition:enter-end="opacity-100 scale-100 blur-0" x-transition:leave="transition ease-in duration-250" x-transition:leave-start="opacity-100 scale-100 blur-0" x-transition:leave-end="opacity-0 scale-75 blur-sm" @click="minimized = false" style="display: none;" class="w-full h-full flex items-center justify-center cursor-pointer" title="Buka Pemutar Musik">
             <svg class="w-7 h-7 text-indigo-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
         </div>
 

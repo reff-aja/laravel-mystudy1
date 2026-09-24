@@ -62,7 +62,7 @@
         </div>
         
         <div class="relative z-10 text-sm text-gray-400">
-            &copy; 2026 MyStudy App. Dibuat untuk Portofolio.
+            &copy; 2026 MyStudy App. Dibuat untuk Portofolio Refaldi.
         </div>
     </div>
 

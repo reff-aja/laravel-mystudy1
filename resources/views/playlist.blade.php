@@ -30,7 +30,9 @@
     {{-- KONTEN UTAMA PLAYLIST --}}
     <main class="max-w-4xl mx-auto px-4 py-10">
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus</h1>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus
+                
+            </h1>
             <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari YouTube langsung di sini, atau buka Spotify melalui pemutar resminya.</p>
         </div>
 

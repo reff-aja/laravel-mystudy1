@@ -203,11 +203,11 @@
                 <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-[#68C7EC]/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#68C7EC] transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-[#001818]/50 transition-colors">
-                        <span class="font-bold text-gray-900 dark:text-white text-lg">Apa itu SmartDo?</span>
+                        <span class="font-bold text-gray-900 dark:text-white text-lg">Apa itu MyStudy?</span>
                         <svg :class="{'rotate-180': open}" class="w-5 h-5 text-[#68C7EC] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
-                        <p>SmartDo adalah aplikasi pencatat tugas (To-Do List) modern yang dirancang khusus untuk membantumu mengatur keseharian, memecah tugas besar menjadi langkah kecil, dan memantau produktivitas dengan antarmuka yang sangat cepat dan bebas gangguan.</p>
+                        <p>MyStudy adalah aplikasi pencatat tugas (To-Do List) modern yang dirancang khusus untuk membantumu mengatur keseharian, memecah tugas besar menjadi langkah kecil, dan memantau produktivitas dengan antarmuka yang sangat cepat dan bebas gangguan.</p>
                     </div>
                 </div>
 
@@ -215,11 +215,11 @@
                 <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-[#68C7EC]/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#68C7EC] transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-[#001818]/50 transition-colors">
-                        <span class="font-bold text-gray-900 dark:text-white text-lg">Apakah aplikasi SmartDo ini gratis?</span>
+                        <span class="font-bold text-gray-900 dark:text-white text-lg">Apakah aplikasi MyStudy ini gratis?</span>
                         <svg :class="{'rotate-180': open}" class="w-5 h-5 text-[#68C7EC] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
-                        <p>Tentu saja! SmartDo 100% gratis untuk digunakan. Karena aplikasi ini dibangun sebagai proyek portofolio, kamu tidak akan menemukan biaya langganan bulanan yang tersembunyi atau iklan yang mengganggu layar belajarmu.</p>
+                        <p>Tentu saja! MyStudy 100% gratis untuk digunakan. Karena aplikasi ini dibangun sebagai proyek portofolio, kamu tidak akan menemukan biaya langganan bulanan yang tersembunyi atau iklan yang mengganggu layar belajarmu.</p>
                     </div>
                 </div>
 
@@ -231,7 +231,7 @@
                         <svg :class="{'rotate-180': open}" class="w-5 h-5 text-[#68C7EC] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
-                        <p>Justru sebaliknya! Dengan memindahkan beban mengingat tugas dari otak ke dalam SmartDo, kamu mengurangi stres dan kelelahan mental <strong>(cognitive load)</strong>. Ini membuat otakmu memiliki ruang lebih untuk fokus pada proses memahami materi, bukan sekadar mengingat *deadline* PR.</p>
+                        <p>Justru sebaliknya! Dengan memindahkan beban mengingat tugas dari otak ke dalam MyStudy, kamu mengurangi stres dan kelelahan mental <strong>(cognitive load)</strong>. Ini membuat otakmu memiliki ruang lebih untuk fokus pada proses memahami materi, bukan sekadar mengingat *deadline* PR.</p>
                     </div>
                 </div>
 
@@ -239,11 +239,11 @@
                 <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-[#68C7EC]/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#68C7EC] transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-[#001818]/50 transition-colors">
-                        <span class="font-bold text-gray-900 dark:text-white text-lg">Mengapa saya harus memilih SmartDo?</span>
+                        <span class="font-bold text-gray-900 dark:text-white text-lg">Mengapa saya harus memilih MyStudy?</span>
                         <svg :class="{'rotate-180': open}" class="w-5 h-5 text-[#68C7EC] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
-                        <p>SmartDo dirancang agar sangat ringan, cepat, dan bebas distraksi. Kami menghindari fitur rumit yang justru membuat pengguna pusing. Ditambah dengan antarmuka modern dan mode gelap (Dark Mode), aplikasi ini secara khusus dibangun agar kamu bisa langsung fokus mengeksekusi tugasmu tanpa buang-buang waktu.</p>
+                        <p>MyStudy dirancang agar sangat ringan, cepat, dan bebas distraksi. Kami menghindari fitur rumit yang justru membuat pengguna pusing. Ditambah dengan antarmuka modern dan mode gelap (Dark Mode), aplikasi ini secara khusus dibangun agar kamu bisa langsung fokus mengeksekusi tugasmu tanpa buang-buang waktu.</p>
                     </div>
                 </div>
 
@@ -263,7 +263,7 @@
                 <div x-data="{ open: false }" class="relative bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl overflow-hidden transition-all duration-300" :class="open ? 'shadow-md dark:shadow-[#68C7EC]/10' : ''">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#68C7EC] transition-transform duration-300 origin-top" :class="open ? 'scale-y-100' : 'scale-y-0'"></div>
                     <button @click="open = !open" class="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-gray-100 dark:hover:bg-[#001818]/50 transition-colors">
-                        <span class="font-bold text-gray-900 dark:text-white text-lg">SmartDo kan menghindari distraksi, mengapa ada fitur musik?</span>
+                        <span class="font-bold text-gray-900 dark:text-white text-lg">MyStudy kan menghindari distraksi, mengapa ada fitur musik?</span>
                         <svg :class="{'rotate-180': open}" class="w-5 h-5 text-[#68C7EC] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
@@ -278,7 +278,7 @@
     {{-- FOOTER --}}
     <footer class="bg-gray-900 dark:bg-black py-12 text-center transition-colors duration-300">
         <p class="text-gray-400 dark:text-gray-500 text-sm">
-            &copy; 2026 SmartDo App. Dibuat untuk Portofolio.
+            &copy; 2026 MyStudy App. Dibuat untuk Portofolio Refaldi.
         </p>
     </footer>
 

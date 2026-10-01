@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class TaskController extends Controller
 {
@@ -38,14 +40,32 @@ class TaskController extends Controller
         // 🛡️ KEAMANAN: Validasi ketat! Judul tugas wajib diisi & maksimal 255 karakter
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'reminder_at' => 'nullable|date|after:now',
+            'reminder_at' => ['nullable', 'date_format:Y-m-d\\TH:i'],
+            'reminder_timezone' => ['required_with:reminder_at', 'timezone'],
         ]);
+
+        $reminderAt = null;
+        if (!empty($validatedData['reminder_at'])) {
+            $reminderAt = CarbonImmutable::createFromFormat(
+                'Y-m-d\\TH:i',
+                $validatedData['reminder_at'],
+                $validatedData['reminder_timezone'],
+            );
+
+            if ($reminderAt === false || $reminderAt->lessThanOrEqualTo(now())) {
+                throw ValidationException::withMessages([
+                    'reminder_at' => 'Pilih waktu pengingat setelah waktu sekarang.',
+                ]);
+            }
+
+            $reminderAt = $reminderAt->utc();
+        }
 
         // Menyimpan tugas ke database
         Task::create([
             'user_id' => Auth::id(), // 🛡️ Otomatis mengaitkan tugas dengan user yang sedang login
             'title' => $validatedData['title'],
-            'reminder_at' => $validatedData['reminder_at'] ?? null,
+            'reminder_at' => $reminderAt,
         ]);
 
         // Kembali ke halaman sebelumnya dengan pesan sukses

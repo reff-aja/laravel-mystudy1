@@ -132,7 +132,7 @@
                             <span class="hidden sm:inline truncate text-sm font-semibold text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</span>
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div x-show="userDropdown" style="display: none;" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
+                        <div x-show="userDropdown" style="display: none;" class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
                             {{-- Menu Tambahan: Chat AI --}}
                             <a href="{{ route('ai.chat') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Chat AI</span>
@@ -178,6 +178,8 @@
             @endforelse
         </div>
     </div>
+
+    <div id="reminder-toast-container" class="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[min(92vw,360px)] flex-col gap-2" aria-live="polite" aria-relevant="additions text"></div>
 
     <div id="delete-modal-backdrop" class="delete-modal-backdrop fixed inset-0 z-40 bg-[#000F0F]/60 backdrop-blur-sm" style="display: none;"></div>
 
@@ -252,9 +254,13 @@
                     </div>
                     <div class="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center">
                         <input type="text" name="title" placeholder="Tambah tugas baru untuk hari ini..." required class="w-full min-w-0 bg-transparent border-0 text-base sm:text-lg font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 px-4 py-3 sm:py-4">
-                        <label class="flex shrink-0 items-center gap-2 px-4 pb-3 text-xs text-gray-500 dark:text-gray-400 sm:px-2 sm:py-0" title="Atur pengingat tugas">
-                            <svg class="h-4 w-4 text-[#68C7EC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z" /></svg>
-                            <input type="datetime-local" name="reminder_at" min="{{ now()->format('Y-m-d\TH:i') }}" class="w-full border-0 bg-transparent p-0 text-xs text-gray-600 focus:ring-0 dark:text-gray-300" aria-label="Waktu pengingat">
+                        <label class="flex w-full shrink-0 flex-col gap-1 px-4 pb-3 text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:px-2 sm:py-0" title="Atur tanggal dan jam pengingat">
+                            <span class="flex items-center gap-2">
+                                <svg class="h-4 w-4 text-[#68C7EC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z" /></svg>
+                                Tanggal dan jam pengingat
+                            </span>
+                            <input id="task-reminder-at" type="datetime-local" name="reminder_at" class="w-full min-w-0 rounded-lg border-0 bg-transparent p-1 text-sm text-gray-700 focus:ring-0 dark:text-gray-200 sm:w-56" aria-label="Tanggal dan jam pengingat">
+                            <input id="task-reminder-timezone" type="hidden" name="reminder_timezone" value="Asia/Jakarta">
                         </label>
                     </div>
                     <button type="submit" class="m-2 mt-0 sm:mt-2 px-6 py-3 sm:py-2 bg-[#68C7EC] hover:opacity-90 text-[#000F0F] rounded-xl font-bold transition-all">
@@ -521,8 +527,44 @@
             const reminderPanel = document.getElementById('reminder-panel');
             const reminderCount = document.getElementById('reminder-count');
             const enableNotifications = document.getElementById('enable-notifications');
+            const reminderToastContainer = document.getElementById('reminder-toast-container');
             const reminderItems = Array.from(document.querySelectorAll('[data-reminder-item]'));
             const notificationStorageKey = 'smartdo-notified-reminders';
+
+            function showReminderToast(title) {
+                if (!reminderToastContainer) return;
+
+                while (reminderToastContainer.children.length >= 3) {
+                    reminderToastContainer.firstElementChild.remove();
+                }
+
+                const toast = document.createElement('div');
+                toast.className = 'pointer-events-auto rounded-xl border border-[#68C7EC]/40 bg-white p-4 shadow-xl dark:border-[#145050] dark:bg-[#001818]';
+                toast.setAttribute('role', 'status');
+
+                const heading = document.createElement('p');
+                heading.className = 'text-sm font-bold text-gray-900 dark:text-white';
+                heading.textContent = 'Pengingat tugas';
+
+                const message = document.createElement('p');
+                message.className = 'mt-1 break-words text-sm text-gray-600 dark:text-gray-300';
+                message.textContent = `Waktunya mengerjakan: ${title}`;
+
+                toast.append(heading, message);
+                reminderToastContainer.append(toast);
+                window.setTimeout(() => toast.remove(), 10000);
+            }
+
+            function getNotifiedReminders() {
+                try {
+                    const savedReminders = JSON.parse(localStorage.getItem(notificationStorageKey) || '{}');
+                    return savedReminders && typeof savedReminders === 'object' && !Array.isArray(savedReminders)
+                        ? savedReminders
+                        : {};
+                } catch (error) {
+                    return {};
+                }
+            }
 
             function updateReminderCount() {
                 const now = Date.now();
@@ -533,28 +575,49 @@
             }
 
             function notifyDueReminders() {
-                if (!('Notification' in window) || Notification.permission !== 'granted') {
-                    return;
-                }
-
-                const notifiedReminders = JSON.parse(localStorage.getItem(notificationStorageKey) || '{}');
+                const notifiedReminders = getNotifiedReminders();
                 const now = Date.now();
 
                 reminderItems.forEach((item) => {
                     const reminderId = item.dataset.reminderId;
                     const reminderAt = new Date(item.dataset.reminderAt).getTime();
                     const title = item.querySelector('p')?.textContent.trim() || 'Tugas';
+                    const savedState = notifiedReminders[reminderId];
+                    const reminderState = savedState && typeof savedState === 'object'
+                        ? savedState
+                        : { website: Boolean(savedState), system: Boolean(savedState) };
 
-                    if (reminderAt <= now && !notifiedReminders[reminderId]) {
-                        new Notification('Pengingat tugas SmartDo', {
-                            body: `Waktunya mengerjakan: ${title}`,
-                            tag: `task-reminder-${reminderId}`,
-                        });
-                        notifiedReminders[reminderId] = true;
+                    if (reminderAt > now) return;
+
+                    if (!reminderState.website) {
+                        showReminderToast(title);
+                        reminderState.website = true;
                     }
+
+                    if (!reminderState.system && 'Notification' in window && Notification.permission === 'granted') {
+                        try {
+                            const notification = new Notification('Pengingat tugas SmartDo', {
+                                body: `Waktunya mengerjakan: ${title}`,
+                                tag: `task-reminder-${reminderId}`,
+                            });
+                            notification.onclick = function() {
+                                window.focus();
+                                notification.close();
+                            };
+                            reminderState.system = true;
+                        } catch (error) {
+                            console.error('Notifikasi sistem gagal ditampilkan:', error);
+                        }
+                    }
+
+                    notifiedReminders[reminderId] = reminderState;
                 });
 
-                localStorage.setItem(notificationStorageKey, JSON.stringify(notifiedReminders));
+                try {
+                    localStorage.setItem(notificationStorageKey, JSON.stringify(notifiedReminders));
+                } catch (error) {
+                    console.error('Status pengingat gagal disimpan:', error);
+                }
             }
 
             if (reminderToggle && reminderPanel) {
@@ -572,6 +635,10 @@
             }
 
             if (enableNotifications) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    enableNotifications.textContent = 'Notifikasi aktif';
+                }
+
                 enableNotifications.addEventListener('click', async function() {
                     if (!('Notification' in window)) {
                         enableNotifications.textContent = 'Browser tidak mendukung';
@@ -586,6 +653,12 @@
 
             updateReminderCount();
             notifyDueReminders();
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    updateReminderCount();
+                    notifyDueReminders();
+                }
+            });
             setInterval(function() {
                 updateReminderCount();
                 notifyDueReminders();

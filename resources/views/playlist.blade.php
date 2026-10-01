@@ -33,7 +33,7 @@
             <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus
                 
             </h1>
-            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari YouTube langsung di sini, atau buka Spotify melalui pemutar resminya.</p>
+            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari Spotify langsung di sini, atau buka Spotify melalui pemutar resminya.</p>
         </div>
 
         {{-- Form Input Link Playlist --}}
@@ -41,7 +41,7 @@
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambahkan Link Playlist-mu Kesini Yuk</h2>
             <form action="{{ route('playlist.save') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
                 @csrf
-                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link YouTube atau Spotify di sini..." required class="flex-1 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#68C7EC] text-gray-900 dark:text-white outline-none">
+                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link Spotify di sini..." required class="flex-1 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#68C7EC] text-gray-900 dark:text-white outline-none">
                 <button type="submit" class="px-6 py-3 bg-[#68C7EC] hover:opacity-90 text-[#000F0F] rounded-xl font-bold text-sm transition-colors shadow-md">
                     Simpan Playlist
                 </button>
@@ -106,7 +106,7 @@
                     @endif
                 @else
                     <div class="text-center py-10 bg-[#001818]/60 rounded-2xl border border-[#68C7EC]/10">
-                        <p class="text-sm text-gray-300">Belum ada link playlist yang tersimpan atau format link belum didukung. Gunakan link YouTube untuk pemutaran penuh langsung di web.</p>
+                        <p class="text-sm text-gray-300">Belum ada link playlist yang tersimpan atau format link belum didukung. Gunakan link Spotify untuk pemutaran penuh langsung di web.</p>
                     </div>
                 @endif
             </div>

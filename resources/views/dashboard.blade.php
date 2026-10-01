@@ -132,7 +132,7 @@
                             <span class="hidden sm:inline truncate text-sm font-semibold text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</span>
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div x-show="userDropdown" style="display: none;" class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
+                        <div x-show="userDropdown" style="display: none;" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
                             {{-- Menu Tambahan: Chat AI --}}
                             <a href="{{ route('ai.chat') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Chat AI</span>

@@ -113,6 +113,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'streak' => $streak
         ]);
     })->middleware(['auth', 'verified'])->name('dashboard');
+
+    Route::get('/help', function () {
+        return view('help');
+    })->middleware(['auth'])->name('help');
 });
 
 require __DIR__ . '/auth.php';

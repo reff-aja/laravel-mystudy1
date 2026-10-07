@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <title>Dashboard - MyStudy</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -115,17 +116,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex min-w-0 justify-between h-16 items-center">
                 {{-- Logo --}}
-                <div class="min-w-0 flex-shrink-0 flex items-center">
+                <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}"
-                        class="font-extrabold text-lg sm:text-2xl text-[#68C7EC] flex items-center hover:scale-105 transition-transform">
-                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                            </path>
-                            <path d="M9 14l2 2 4-4"></path>
-                        </svg>
-                        MyStudy
+                        class="font-extrabold text-2xl text-[#68C7EC] flex items-center gap-2 hover:scale-105 transition-transform">
+                        <img src="{{ asset('images/logo.png') }}" alt="MyStudy Logo" class="w-12 h-12 object-contain">
+                        <span>MyStudy</span>
                     </a>
                 </div>
 
@@ -181,8 +176,14 @@
                         </button>
 
                         <div x-show="userDropdown" style="display: none;"
-                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
+                            class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
                             {{-- Menu Tambahan: Chat AI --}}
+
+                            <a href="{{ route('help') }}"
+                                class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
+                                <span>Pusat Bantuan</span>
+                            </a>
+
                             <a href="{{ route('ai.chat') }}"
                                 class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Chat AI</span>
@@ -314,7 +315,8 @@
                 <div>
                     <p class="text-sm font-bold text-gray-900 dark:text-white">Progres Keseluruhan</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ $completedTasks }} dari
-                        {{ $totalTasks }} tugas selesai</p>
+                        {{ $totalTasks }} tugas selesai
+                    </p>
                 </div>
             </div>
         </div>
@@ -411,7 +413,7 @@
                                     <div class="flex-1">
                                         <p
                                             class="task-title break-words text-sm sm:text-base font-semibold {{ $task->is_completed ? 'text-gray-400 dark:text-gray-600 line-through' : 'text-gray-900 dark:text-white' }}">
-                                             {{ $task->title }}
+                                            {{ $task->title }}
                                         </p>
                                         @if($task->reminder_at && !$task->is_completed)
                                             <p
@@ -421,7 +423,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         d="M12 6v6l4 2m6-2a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z" />
                                                 </svg>
-                                                 {{ $task->reminder_at->translatedFormat('d M Y, H:i') }}
+                                                {{ $task->reminder_at->translatedFormat('d M Y, H:i') }}
                                             </p>
                                         @endif
                                     </div>
@@ -548,7 +550,7 @@
                             <div class="flex flex-col items-center">
                                 <div class="w-full h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all {{ $day['active'] ? 'bg-[#68C7EC] text-[#000F0F] shadow-md shadow-[#68C7EC]/30 scale-105' : 'bg-gray-100 dark:bg-[#000F0F] text-gray-400 dark:text-gray-600 border border-transparent dark:border-[#002525]' }}"
                                     title="{{ $day['completed_count'] }} tugas selesai pada {{ $day['date'] }}">
-                                     {{ $day['completed_count'] > 0 ? $day['completed_count'] : $day['day'][0] }}
+                                    {{ $day['completed_count'] > 0 ? $day['completed_count'] : $day['day'][0] }}
                                 </div>
                                 <span class="text-[10px] text-gray-400 mt-1.5 font-medium">{{ $day['day'] }}</span>
                             </div>

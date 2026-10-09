@@ -4,8 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <title>Playlist Fokus - MyStudy</title>
+    <title>Playlist Musik - MyStudy</title>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <script>
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -14,105 +16,127 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased bg-gray-50 dark:bg-[#000F0F] text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+<body class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen transition-colors duration-300">
 
     {{-- NAVBAR ATAS --}}
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-            <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-[#68C7EC] flex items-center">
-                MyStudy
-            </a>
-            <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#68C7EC] transition-colors">
-                &larr; Kembali ke Dashboard
-            </a>
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525] transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                {{-- Logo --}}
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-[#68C7EC] flex items-center gap-2 hover:scale-105 transition-transform">
+                        <img src="{{ asset('images/logo.png') }}" alt="MyStudy Logo" class="w-9 h-9 object-contain">
+                        <span>MyStudy</span>
+                    </a>
+                </div>
+
+                {{-- Kembalikan ke Dashboard --}}
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#68C7EC] transition-colors flex items-center gap-1">
+                        &larr; Kembali ke Dashboard
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
-    {{-- KONTEN UTAMA PLAYLIST --}}
-    <main class="max-w-4xl mx-auto px-4 py-10">
-        <div class="mb-8 text-center">
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Zona Musik & Fokus
-                
+    {{-- KONTEN UTAMA --}}
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        {{-- HEADER KANAN / KIRI --}}
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3">
+                Playlist Fokus Musik 🎵
             </h1>
-            <p class="text-gray-500 dark:text-gray-400">Putar lagu favoritmu dari Spotify langsung di sini, atau buka Spotify melalui pemutar resminya.</p>
+            <p class="mt-2 text-gray-500 dark:text-gray-400">
+                Kelola tautan musik atau hubungkan akun Spotify kamu agar pengalaman bekerja di MyStudy makin fokus!
+            </p>
         </div>
 
-        {{-- Form Input Link Playlist --}}
-        <div class="bg-white dark:bg-[#001818] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-[#002525] mb-8">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambahkan Link Playlist-mu Kesini Yuk</h2>
-            <form action="{{ route('playlist.save') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
-                @csrf
-                <input type="url" name="playlist_url" value="{{ Auth::user()->playlist_url }}" placeholder="Tempel link Spotify di sini..." required class="flex-1 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#68C7EC] text-gray-900 dark:text-white outline-none">
-                <button type="submit" class="px-6 py-3 bg-[#68C7EC] hover:opacity-90 text-[#000F0F] rounded-xl font-bold text-sm transition-colors shadow-md">
-                    Simpan Playlist
-                </button>
-            </form>
-            @if(session('success'))
-                <p class="text-xs text-green-600 dark:text-green-400 mt-2 font-medium">{{ session('success') }}</p>
-            @endif
-        </div>
+        {{-- ALERT NOTIFIKASI --}}
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-3 text-sm font-semibold">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
-        {{-- Area Pemutar Musik Dinamis (Embed Player) --}}
-        <div class="bg-gradient-to-br from-[#002525] to-[#000F0F] border border-[#68C7EC]/20 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
-            <div class="absolute -right-10 -top-10 w-48 h-48 bg-[#68C7EC] opacity-10 rounded-full blur-3xl"></div>
-            
-            <div class="relative z-10">
-                <span class="bg-[#68C7EC]/20 text-[#68C7EC] border border-[#68C7EC]/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Pemutar Aktif</span>
-                <h3 class="text-2xl font-extrabold mt-3 mb-6">Sesi Musik Fokusmu</h3>
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 rounded-2xl flex items-center gap-3 text-sm font-semibold">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
 
-                @php
-                    $url = Auth::user()->playlist_url;
-                    $embedUrl = null;
-                    $isSpotify = false;
+        <div class="grid grid-cols-1 gap-6">
 
-                    if ($url) {
-                        if (str_contains($url, 'spotify.com')) {
-                            $isSpotify = true;
-                            $cleanUrl = explode('?', $url)[0];
-                            $cleanUrl = preg_replace('/\/intl-[a-z]{2}\//', '/', $cleanUrl);
-                            $embedUrl = str_replace('open.spotify.com/', 'open.spotify.com/embed/', $cleanUrl);
-                        } 
-                        elseif (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {
-                            if (str_contains($url, 'watch?v=')) {
-                                parse_str(parse_url($url, PHP_URL_QUERY), $ytParams);
-                                if (isset($ytParams['v'])) {
-                                    $embedUrl = 'https://www.youtube.com/embed/' . $ytParams['v'];
-                                }
-                            } elseif (str_contains($url, 'youtu.be/')) {
-                                $path = parse_url($url, PHP_URL_PATH);
-                                $embedUrl = 'https://www.youtube.com/embed' . $path;
-                            } elseif (str_contains($url, 'youtube.com/playlist')) {
-                                parse_str(parse_url($url, PHP_URL_QUERY), $ytParams);
-                                if (isset($ytParams['list'])) {
-                                    $embedUrl = 'https://www.youtube.com/embed/videoseries?list=' . urlencode($ytParams['list']);
-                                }
-                            }
-                        }
-                    }
-                @endphp
+            {{-- KARTU 1: INTEGRASI SPOTIFY RESMI --}}
+            <div class="bg-white dark:bg-[#001818] rounded-3xl p-6 sm:p-8 border border-gray-100 dark:border-[#002525] shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            Ayo hubungkan akun spotify kamu disini
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Otentikasi langsung menggunakan akun Spotify milikmu untuk fitur pemutar musik resmi.
+                        </p>
+                    </div>
 
-                @if($embedUrl)
-                    <div class="w-full rounded-2xl overflow-hidden shadow-lg bg-black/40 border border-[#68C7EC]/10">
-                        @if($isSpotify)
-                            <iframe src="{{ $embedUrl }}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                        @elseif(str_contains($embedUrl, 'youtube.com'))
-                            <iframe width="100%" height="250" src="{{ $embedUrl }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div>
+                        @if(session('spotify_access_token'))
+                            <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-full text-xs font-bold">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Terhubung dengan Spotify
+                            </div>
+                        @else
+                            <a href="{{ route('spotify.login') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#1DB954] hover:bg-[#1ed760] text-black font-extrabold rounded-2xl transition-all shadow-lg hover:scale-105 text-sm">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.899 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-.1.2-1.2-.42-.18-.6.42-1.2 1.02-1.38 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                Hubungkan Spotify
+                            </a>
                         @endif
                     </div>
-                    @if($isSpotify)
-                        <div class="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 sm:flex-row sm:items-center sm:justify-between">
-                            <p class="text-sm leading-6 text-amber-100">Spotify membatasi pemutaran penuh di dalam embed. Untuk mendengarkan lagu sampai selesai, buka pemutar resmi Spotify.</p>
-                            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-xl bg-white px-4 py-2 text-center text-sm font-bold text-[#000F0F] transition-opacity hover:opacity-90">Buka di Spotify</a>
-                        </div>
-                    @endif
-                @else
-                    <div class="text-center py-10 bg-[#001818]/60 rounded-2xl border border-[#68C7EC]/10">
-                        <p class="text-sm text-gray-300">Belum ada link playlist yang tersimpan atau format link belum didukung. Gunakan link Spotify untuk pemutaran penuh langsung di web.</p>
-                    </div>
-                @endif
+                </div>
             </div>
+
+            {{-- KARTU 2: ATUR TAUTAN PLAYLIST KUSTOM --}}
+            <div class="bg-white dark:bg-[#001818] rounded-3xl p-6 sm:p-8 border border-gray-100 dark:border-[#002525] shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Tautan Playlist Kustom
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    Tempelkan URL playlist dari Spotify atau YouTube Musik yang ingin kamu dengarkan di pemutar floating player.
+                </p>
+
+                <form action="{{ route('playlist.update') }}" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label for="playlist_url" class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                            URL Playlist Spotify / YouTube
+                        </label>
+                        <input type="url" 
+                               name="playlist_url" 
+                               id="playlist_url" 
+                               value="{{ old('playlist_url', Auth::user()->playlist_url) }}" 
+                               placeholder="https://open.spotify.com/playlist/... atau https://youtube.com/..." 
+                               class="w-full px-4 py-3 bg-gray-50 dark:bg-[#000F0F] border border-gray-200 dark:border-[#002525] rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-[#68C7EC] focus:border-[#68C7EC] transition-all text-sm">
+                        @error('playlist_url')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="px-6 py-2.5 bg-[#68C7EC] hover:opacity-90 text-[#000F0F] font-bold rounded-xl text-sm transition-all shadow-md">
+                            Simpan Playlist
+                        </button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </main>
 
+    @include('components.floating-player')
 </body>
 </html>

@@ -97,6 +97,11 @@
         .delete-confirm-card.hide {
             animation: modalOut 0.2s ease forwards;
         }
+
+        #task-reminder-at::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(63%) sepia(64%) saturate(411%) hue-rotate(160deg) brightness(92%) contrast(92%);
+        }
     </style>
 </head>
 

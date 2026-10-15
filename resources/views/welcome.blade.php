@@ -441,7 +441,8 @@
                         class="px-6 pb-5 pt-2 text-gray-600 dark:text-gray-400" style="display: none;">
                         <p>Sangat aman. Sistem kami dibangun menggunakan kerangka keamanan dari Laravel. Semua
                             <i>password</i> kamu dienkripsi menggunakan protokol modern. Data tugasmu juga bersifat 100%
-                            privat, yang artinya hanya kamu yang bisa mengakses dan mengelolanya melalui akunmu.</p>
+                            privat, yang artinya hanya kamu yang bisa mengakses dan mengelolanya melalui akunmu.
+                        </p>
                     </div>
                 </div>
 
@@ -545,8 +546,76 @@
                     }
                 }
             });
+
+            // Tunggu sampai seluruh resource halaman selesai dimuat (DOM, Gambar, Script)
+            window.addEventListener('load', function () {
+                const preloader = document.getElementById('smartdo-preloader');
+
+                // Tambahkan sedikit delay (misal 300ms) agar animasi terlihat lebih estetik sebelum hilang
+                setTimeout(() => {
+                    preloader.classList.add('preloader-hidden');
+                }, 5000);
+            });
         });
     </script>
 </body>
+
+{{-- ========================================== --}}
+{{-- 🚀 MYSTUDY PRELOADER (LOADING SCREEN) --}}
+{{-- ========================================== --}}
+<style>
+    /* Animasi garis loading modern yang bergerak ke kanan-kiri */
+    @keyframes modernLine {
+        0% {
+            left: -30%;
+            width: 30%;
+        }
+
+        50% {
+            left: 30%;
+            width: 70%;
+        }
+
+        100% {
+            left: 100%;
+            width: 30%;
+        }
+    }
+
+    .animate-modern-line {
+        animation: modernLine 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    /* Class untuk menyembunyikan preloader dengan mulus (fade out) */
+    .preloader-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+</style>
+
+<!-- Container Preloader: bg-white (Terang) & dark:bg-[#000F0F] (Gelap) -->
+<div id="smartdo-preloader"
+    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-[#000F0F] transition-all duration-700 ease-in-out">
+
+    <!-- Logo Web (Animasi Pulse/Napas) -->
+    <div class="relative flex justify-center items-center mb-8">
+        <img src="{{ asset('images/logo.png') }}" alt="SmartDo Logo"
+            class="w-24 h-24 object-contain drop-shadow-lg animate-pulse">
+    </div>
+
+    <!-- Animasi Garis Loading -->
+    <div class="w-64 h-1.5 bg-gray-200 dark:bg-[#002525] rounded-full overflow-hidden relative shadow-inner">
+        <div class="absolute top-0 h-full bg-[#68C7EC] rounded-full animate-modern-line shadow-[0_0_10px_#68C7EC]">
+        </div>
+    </div>
+
+    <!-- Teks Opsional -->
+    <p class="mt-4 text-xs font-bold tracking-widest text-gray-400 dark:text-gray-500 uppercase">
+        Memuat MyStudy...
+    </p>
+
+</div>
+{{-- ========================================== --}}
 
 </html>

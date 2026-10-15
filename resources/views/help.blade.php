@@ -23,12 +23,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-[#68C7EC] flex items-center hover:scale-105 transition-transform">
-                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 022-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            <path d="M9 14l2 2 4-4"></path>
-                        </svg>
-                        MyStudy
+                    <a href="{{ route('dashboard') }}" 
+                    class="font-extrabold text-2xl text-[#68C7EC] flex items-center hover:scale-105 transition-transform">
+                        <img src="{{ asset('images/logo.png') }}" alt="MyStudy Logo" class="w-12 h-12 object-contain">
+                        <span>MyStudy</span>
                     </a>
                 </div>
 
@@ -50,10 +48,10 @@
                 Pusat Bantuan
             </span>
             <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mt-4 mb-3">
-                Apa yang bisa kami bantu? 👋
+                Apa yang bisa kami bantu?
             </h1>
             <p class="text-gray-500 dark:text-gray-400 text-base">
-                Temukan panduan cepat dan solusi lengkap untuk memaksimalkan penggunaan fitur-fitur di SmartDo.
+                Temukan panduan cepat dan solusi lengkap untuk memaksimalkan penggunaan fitur-fitur di MyStudy.
             </p>
         </div>
 
@@ -125,6 +123,11 @@
                     Gunakan ikon bulan/matahari di navigasi atas untuk berganti mode gelap/terang, dan akses Pengaturan Profil untuk mengganti nama atau kata sandi.
                 </p>
             </div>
+
+            <span class="bg-[#68C7EC]/10 text-[#68C7EC] border border-[#68C7EC]/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                Hubungi kami<br>
+                Email: <a href="mailto:support@mystudy.com" class="hover:underline">support@mystudy.com</a>
+            </span>
 
         </div>
     </main>

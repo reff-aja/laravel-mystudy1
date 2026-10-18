@@ -554,7 +554,7 @@
                 // Tambahkan sedikit delay (misal 300ms) agar animasi terlihat lebih estetik sebelum hilang
                 setTimeout(() => {
                     preloader.classList.add('preloader-hidden');
-                }, 5000);
+                }, 2000);
             });
         });
     </script>

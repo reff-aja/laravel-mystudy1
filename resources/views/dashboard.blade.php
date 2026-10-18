@@ -182,11 +182,15 @@
 
                         <div x-show="userDropdown" style="display: none;"
                             class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
-                            {{-- Menu Tambahan: Chat AI --}}
 
                             <a href="{{ route('help') }}"
                                 class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Pusat Bantuan</span>
+                            </a>
+
+                            <a href="{{ route('calculator') }}"
+                                class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
+                                <span>Kalkulator</span>
                             </a>
 
                             <a href="{{ route('ai.chat') }}"

@@ -123,6 +123,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Rute Halaman Kalkulator Scientific
+    Route::get('/calculator', function () {
+        return view('calculator');
+    })->name('calculator');
+
 });
 
 require __DIR__ . '/auth.php';

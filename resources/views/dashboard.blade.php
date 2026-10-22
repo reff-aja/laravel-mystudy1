@@ -193,7 +193,7 @@
                                 <span>Kalkulator</span>
                             </a>
 
-                            <a href="{{ route('ai.chat') }}"
+                            <a href="{{ route('ai-chat') }}"
                                 class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Chat AI</span>
                             </a>
@@ -340,12 +340,6 @@
                 <form action="{{ route('tasks.store') }}" method="POST"
                     class="bg-white dark:bg-[#001818] p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-[#002525] flex flex-col sm:flex-row focus-within:ring-2 focus-within:ring-[#68C7EC] focus-within:border-[#68C7EC] transition-all">
                     @csrf
-                    <div class="hidden sm:flex pl-5 py-4 items-center justify-center text-gray-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                            </path>
-                        </svg>
-                    </div>
                     <div class="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center">
                         <input type="text" name="title" placeholder="Tambah tugas baru untuk hari ini..." required
                             class="w-full min-w-0 bg-transparent border-0 text-base sm:text-lg font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 px-4 py-3 sm:py-4">
@@ -441,7 +435,7 @@
                                 {{-- Tombol Aksi (AI & Hapus) --}}
                                 <div class="flex shrink-0 items-center space-x-1 sm:space-x-2 sm:ml-4">
                                     {{-- Tombol Tanya AI --}}
-                                    <a href="{{ route('ai.chat') }}"
+                                    <a href="{{ route('ai-chat') }}"
                                         class="text-[#68C7EC]/70 hover:text-[#68C7EC] transition-colors p-1.5 rounded-lg hover:bg-[#68C7EC]/10"
                                         title="Bantu kerjakan tugas ini dengan AI">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

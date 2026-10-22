@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SpotifyController;
+use App\Http\Controllers\AiChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -85,9 +86,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // 2. HALAMAN PENDUKUNG (AI, Bantuan)
     // ==========================================
-    Route::get('/ai-chat', function () {
-        return view('ai-chat');
-    })->name('ai.chat');
+
+    Route::get('/ai-chat', [AiChatController::class, 'index'])->name('ai-chat');
+    Route::post('/ai-chat/send', [AiChatController::class, 'sendMessage'])->name('ai-chat.send');
 
     Route::get('/help', function () {
         return view('help');

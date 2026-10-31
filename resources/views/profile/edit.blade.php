@@ -19,7 +19,7 @@
 </head>
 
 <body
-    class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen transition-colors duration-300"
+    class="grid-canvas font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen transition-colors duration-300"
     x-data="{ userDropdown: false }">
 
     {{-- NAVBAR ATAS (Sama persis dengan Dashboard) --}}

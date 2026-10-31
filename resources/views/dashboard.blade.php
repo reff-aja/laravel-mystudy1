@@ -17,6 +17,24 @@
         }
     </script>
     <style>
+        /* Animasi Ambient Glow Background */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* Animasi Shimmer Kartu Tugas */
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        /* Animasi Modal Umum */
         @keyframes modalIn {
             0% {
                 opacity: 0;
@@ -42,23 +60,13 @@
         }
 
         @keyframes backdropIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         @keyframes backdropOut {
-            0% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .delete-modal-backdrop {
@@ -106,8 +114,15 @@
 </head>
 
 <body
-    class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen overflow-x-hidden transition-colors duration-300"
-    x-data="{ userDropdown: false }">
+    class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen overflow-x-hidden transition-colors duration-300 relative"
+    x-data="{ userDropdown: false, showCalculator: false, calcDisplay: '0', calcHistory: '' }">
+
+    {{-- AMBIENT BACKGROUND ANIMATION (Fase 2 - Poin 5 & 11) --}}
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#68C7EC]/20 dark:bg-[#68C7EC]/5 rounded-full mix-blend-multiply dark:mix-blend-screen blur-3xl opacity-70 animate-[blob_7s_infinite]"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-blue-300/20 dark:bg-blue-900/10 rounded-full mix-blend-multiply dark:mix-blend-screen blur-3xl opacity-70 animate-[blob_7s_infinite] animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[600px] h-[600px] bg-cyan-200/20 dark:bg-cyan-900/10 rounded-full mix-blend-multiply dark:mix-blend-screen blur-3xl opacity-70 animate-[blob_7s_infinite] animation-delay-4000"></div>
+    </div>
 
     @php
         $reminderTasks = $tasks
@@ -116,8 +131,7 @@
     @endphp
 
     {{-- NAVBAR ATAS --}}
-    <nav
-        class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525] transition-colors duration-300">
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525] transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex min-w-0 justify-between h-16 items-center">
                 {{-- Logo --}}
@@ -130,7 +144,7 @@
                 </div>
 
                 {{-- Bagian Kanan (Theme Toggle & Profil) --}}
-                <div class="shrink-0 flex items-center space-x-1.5 sm:space-x-4">
+                <div class="shrink-0 flex items-center space-x-1.5 sm:space-x-4 relative z-50">
                     <button id="theme-toggle"
                         class="shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#001818] rounded-full transition-colors"
                         aria-label="Ganti tema">
@@ -188,17 +202,18 @@
                                 <span>Pusat Bantuan</span>
                             </a>
 
-                            <a href="{{ route('calculator') }}"
-                                class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
-                                <span>Kalkulator</span>
-                            </a>
+                            <button @click="showCalculator = !showCalculator; userDropdown = false"
+                                class="w-full flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium text-left">
+                                <span>Kalkulator Cepat</span>
+                                <span
+                                    class="text-xs bg-[#68C7EC]/20 px-1.5 py-0.5 rounded text-[#68C7EC]">Floating</span>
+                            </button>
 
                             <a href="{{ route('ai-chat') }}"
                                 class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Chat AI</span>
                             </a>
 
-                            {{-- Menu Tambahan: Playlist Musik --}}
                             <a href="{{ route('playlist') }}"
                                 class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium">
                                 <span>Playlist Musik</span>
@@ -286,9 +301,8 @@
     </div>
 
     {{-- AREA UTAMA --}}
-    <main class="w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <main class="relative z-10 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-        {{-- Kalkulasi Progres Dinamis --}}
         @php
             $totalTasks = Auth::user()->tasks()->count();
             $completedTasks = Auth::user()->tasks()->where('is_completed', true)->count();
@@ -311,7 +325,7 @@
 
             {{-- Widget Progres Tugas Dinamis --}}
             <div
-                class="w-full sm:w-auto bg-white dark:bg-[#001818] p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-[#002525] flex items-center gap-4 sm:min-w-[250px]">
+                class="w-full sm:w-auto bg-white/90 dark:bg-[#001818]/90 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-[#002525] flex items-center gap-4 sm:min-w-[250px]">
                 <div
                     class="w-12 h-12 rounded-full border-4 border-[#68C7EC]/20 dark:border-[#68C7EC]/10 flex items-center justify-center relative">
                     <svg class="absolute inset-0 w-full h-full text-[#68C7EC] transform -rotate-90" viewBox="0 0 36 36">
@@ -331,14 +345,14 @@
         </div>
 
         {{-- BENTO GRID LAYOUT --}}
-        <div class="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
+        <div class="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-start relative z-10">
 
             {{-- KOLOM KIRI (Daftar Tugas) - Span 2 Kolom --}}
             <div class="min-w-0 lg:col-span-2 flex flex-col gap-6">
 
                 {{-- Form Input Cepat --}}
                 <form action="{{ route('tasks.store') }}" method="POST"
-                    class="bg-white dark:bg-[#001818] p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-[#002525] flex flex-col sm:flex-row focus-within:ring-2 focus-within:ring-[#68C7EC] focus-within:border-[#68C7EC] transition-all">
+                    class="bg-white/90 dark:bg-[#001818]/90 backdrop-blur-md p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-[#002525] flex flex-col sm:flex-row focus-within:ring-2 focus-within:ring-[#68C7EC] focus-within:border-[#68C7EC] transition-all">
                     @csrf
                     <div class="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center">
                         <input type="text" name="title" placeholder="Tambah tugas baru untuk hari ini..." required
@@ -369,7 +383,7 @@
 
                 {{-- Daftar Tugas Card --}}
                 <div
-                    class="min-w-0 bg-white dark:bg-[#001818] rounded-3xl shadow-sm border border-gray-100 dark:border-[#002525] p-4 sm:p-8">
+                    class="min-w-0 bg-white/90 dark:bg-[#001818]/90 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 dark:border-[#002525] p-4 sm:p-8">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Eksekusi</h2>
 
@@ -394,9 +408,22 @@
                     {{-- Wrapper List --}}
                     <div class="space-y-4">
                         @forelse($tasks as $task)
-                            <div
-                                class="task-item group min-w-0 flex items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 bg-gray-50 dark:bg-[#000F0F] rounded-2xl border border-gray-100 dark:border-[#002525] hover:border-[#68C7EC]/50 dark:hover:border-[#68C7EC]/50 transition-colors">
-                                <div class="flex min-w-0 items-center space-x-3 sm:space-x-4 flex-1">
+                            @php
+                                $targetDate = $task->reminder_at ?? $task->deadline ?? null;
+                                $daysLeft = null;
+                                if ($targetDate) {
+                                    $parsedDate = \Carbon\Carbon::parse($targetDate);
+                                    $daysLeft = (int) now()->startOfDay()->diffInDays($parsedDate->startOfDay(), false);
+                                }
+                            @endphp
+
+                            {{-- Kartu Tugas dengan Animasi Hover & Glow --}}
+                            <div class="task-item group relative min-w-0 flex items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 bg-gray-50 dark:bg-[#000F0F] rounded-2xl border border-gray-100 dark:border-[#002525] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#68C7EC]/50 hover:shadow-lg hover:shadow-[#68C7EC]/10 overflow-hidden">
+                                
+                                {{-- Efek Animasi Kilap Gradasi (Shine) - Poin 10 & 11 --}}
+                                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-[#68C7EC]/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none"></div>
+
+                                <div class="flex min-w-0 items-center space-x-3 sm:space-x-4 flex-1 relative z-10">
                                     {{-- Form Update Status Selesai/Belum --}}
                                     <form action="{{ route('tasks.update', $task->id) }}" method="POST">
                                         @csrf
@@ -413,11 +440,41 @@
                                         </button>
                                     </form>
 
-                                    <div class="flex-1">
-                                        <p
-                                            class="task-title break-words text-sm sm:text-base font-semibold {{ $task->is_completed ? 'text-gray-400 dark:text-gray-600 line-through' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $task->title }}
-                                        </p>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p
+                                                class="task-title break-words text-sm sm:text-base font-semibold {{ $task->is_completed ? 'text-gray-400 dark:text-gray-600 line-through' : 'text-gray-900 dark:text-white' }}">
+                                                {{ $task->title }}
+                                            </p>
+
+                                            {{-- Badge Pengingat H-2 / Hari ini --}}
+                                            @if(!$task->is_completed && !is_null($daysLeft) && $daysLeft >= 0 && $daysLeft <= 2)
+                                                <span
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30 animate-pulse">
+                                                    @if($daysLeft == 0)
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round">
+                                                            <path
+                                                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                                            </path>
+                                                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                                                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                                        </svg>
+                                                        Hari ini!
+                                                    @else
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                        H-{{ $daysLeft }}
+                                                    @endif
+                                                </span>
+                                            @endif
+                                        </div>
+
                                         @if($task->reminder_at && !$task->is_completed)
                                             <p
                                                 class="mt-1 flex items-center gap-1 text-xs {{ $task->reminder_at->isPast() ? 'text-red-500' : 'text-gray-500 dark:text-gray-400' }}">
@@ -432,20 +489,8 @@
                                     </div>
                                 </div>
 
-                                {{-- Tombol Aksi (AI & Hapus) --}}
-                                <div class="flex shrink-0 items-center space-x-1 sm:space-x-2 sm:ml-4">
-                                    {{-- Tombol Tanya AI --}}
-                                    <a href="{{ route('ai-chat') }}"
-                                        class="text-[#68C7EC]/70 hover:text-[#68C7EC] transition-colors p-1.5 rounded-lg hover:bg-[#68C7EC]/10"
-                                        title="Bantu kerjakan tugas ini dengan AI">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                                            </path>
-                                        </svg>
-                                    </a>
-
-                                    {{-- Tombol Hapus --}}
+                                {{-- Tombol Aksi (Hapus) --}}
+                                <div class="flex shrink-0 items-center space-x-1 sm:space-x-2 sm:ml-4 relative z-10">
                                     <form class="delete-task-form" data-task-title="{{ $task->title }}"
                                         action="{{ route('tasks.destroy', $task->id) }}" method="POST">
                                         @csrf
@@ -473,9 +518,29 @@
             {{-- KOLOM KANAN (Widgets) - Span 1 Kolom --}}
             <div class="flex flex-col gap-6">
 
+                {{-- Widget Motivasi (Poin 5, 10, 11) --}}
+                <div class="relative overflow-hidden rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 group bg-white/90 dark:bg-[#001818]/90 backdrop-blur-md border border-gray-100 dark:border-[#002525]">
+                    {{-- Aksen Gradasi Animasi --}}
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-gradient-to-br from-[#68C7EC]/30 to-transparent opacity-50 group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="p-2 bg-[#68C7EC]/10 rounded-xl text-[#68C7EC] group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-gray-900 dark:text-white text-sm tracking-wide">Fokus Hari Ini</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm font-medium italic leading-relaxed">
+                            "Jangan menunggu waktu yang tepat untuk mulai eksekusi. Mulailah sekarang, dan waktu itu akan menjadi tepat dengan sendirinya."
+                        </p>
+                    </div>
+                </div>
+
                 {{-- Widget Musik Lo-Fi --}}
                 <div
-                    class="bg-gradient-to-br from-[#002525] to-[#000F0F] border border-[#68C7EC]/20 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
+                    class="bg-gradient-to-br from-[#002525]/90 to-[#000F0F]/90 backdrop-blur-md border border-[#68C7EC]/20 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
                     <div
                         class="absolute -right-10 -top-10 w-40 h-40 bg-[#68C7EC] opacity-10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700">
                     </div>
@@ -521,7 +586,7 @@
 
                 {{-- Widget Aktivitas 7 Hari Terakhir & Streak --}}
                 <div
-                    class="bg-white dark:bg-[#001818] rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-[#002525]">
+                    class="bg-white/90 dark:bg-[#001818]/90 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-[#002525]">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                         <h3 class="font-bold text-gray-900 dark:text-white flex items-center text-sm min-w-0">
                             <svg class="w-5 h-5 mr-2 text-[#68C7EC]" fill="none" stroke="currentColor"
@@ -835,6 +900,137 @@
     </script>
 
     @include('components.floating-player')
+
+    {{-- FLOATING CALCULATOR WIDGET --}}
+    <div x-data="{
+        display: '0',
+        history: '',
+        waitingForNext: false,
+
+        appendNum(n) {
+            if (this.waitingForNext) {
+                this.display = n;
+                this.waitingForNext = false;
+            } else {
+                this.display = this.display === '0' ? n : this.display + n;
+            }
+        },
+        appendDot() {
+            if (this.waitingForNext) {
+                this.display = '0.';
+                this.waitingForNext = false;
+                return;
+            }
+            if (!this.display.includes('.')) {
+                this.display += '.';
+            }
+        },
+        setOp(op) {
+            this.history = this.display + ' ' + op + ' ';
+            this.waitingForNext = true;
+        },
+        clearAll() {
+            this.display = '0';
+            this.history = '';
+            this.waitingForNext = false;
+        },
+        backspace() {
+            if (this.waitingForNext) return;
+            this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0';
+        },
+        percent() {
+            this.display = (parseFloat(this.display) / 100).toString();
+        },
+        calculate() {
+            if (!this.history || this.waitingForNext) return;
+            let fullExpr = this.history + this.display;
+            let cleanExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/');
+            try {
+                let res = eval(cleanExpr);
+                this.history = fullExpr + ' =';
+                this.display = Number.isInteger(res) ? res.toString() : parseFloat(res.toFixed(4)).toString();
+                this.waitingForNext = true;
+            } catch (e) {
+                this.display = 'Error';
+            }
+        }
+    }" x-show="showCalculator" x-cloak x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+        class="fixed bottom-6 left-6 z-50 w-80 bg-white/90 dark:bg-[#001818]/90 border border-gray-200 dark:border-[#002525] rounded-3xl shadow-2xl p-4 overflow-hidden backdrop-blur-xl">
+
+        {{-- Header Widget --}}
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-[#002525]">
+            <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-[#68C7EC] animate-pulse"></div>
+                <span class="text-sm font-bold text-gray-900 dark:text-white">Kalkulator MyStudy</span>
+            </div>
+            <button @click="showCalculator = false"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#002525] transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Layar Display --}}
+        <div
+            class="bg-gray-50 dark:bg-[#000F0F] border border-gray-100 dark:border-[#002525] rounded-2xl p-3 mb-3 text-right">
+            <div class="text-xs text-gray-400 h-4 overflow-x-auto font-mono" x-text="history"></div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate tracking-wider font-mono"
+                x-text="display"></div>
+        </div>
+
+        {{-- Keypad --}}
+        <div class="grid grid-cols-4 gap-2 text-sm font-bold">
+            <button @click="clearAll()"
+                class="p-2.5 text-red-500 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all">AC</button>
+            <button @click="backspace()"
+                class="p-2.5 text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-xl transition-all">⌫</button>
+            <button @click="percent()"
+                class="p-2.5 text-[#68C7EC] bg-[#68C7EC]/10 hover:bg-[#68C7EC]/20 rounded-xl transition-all">%</button>
+            <button @click="setOp('÷')"
+                class="p-2.5 text-[#68C7EC] bg-[#68C7EC]/10 hover:bg-[#68C7EC]/20 rounded-xl transition-all">÷</button>
+
+            <button @click="appendNum('7')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">7</button>
+            <button @click="appendNum('8')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">8</button>
+            <button @click="appendNum('9')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">9</button>
+            <button @click="setOp('×')"
+                class="p-2.5 text-[#68C7EC] bg-[#68C7EC]/10 hover:bg-[#68C7EC]/20 rounded-xl transition-all">×</button>
+
+            <button @click="appendNum('4')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">4</button>
+            <button @click="appendNum('5')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">5</button>
+            <button @click="appendNum('6')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">6</button>
+            <button @click="setOp('-')"
+                class="p-2.5 text-[#68C7EC] bg-[#68C7EC]/10 hover:bg-[#68C7EC]/20 rounded-xl transition-all">-</button>
+
+            <button @click="appendNum('1')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">1</button>
+            <button @click="appendNum('2')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">2</button>
+            <button @click="appendNum('3')"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">3</button>
+            <button @click="setOp('+')"
+                class="p-2.5 text-[#68C7EC] bg-[#68C7EC]/10 hover:bg-[#68C7EC]/20 rounded-xl transition-all">+</button>
+
+            <button @click="appendNum('0')"
+                class="col-span-2 p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">0</button>
+            <button @click="appendDot()"
+                class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">.</button>
+            <button @click="calculate()"
+                class="p-2.5 bg-[#68C7EC] text-[#000F0F] hover:brightness-110 rounded-xl transition-all">=</button>
+        </div>
+    </div>
 </body>
 
 </html>

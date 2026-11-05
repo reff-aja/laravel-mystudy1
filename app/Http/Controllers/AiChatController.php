@@ -18,11 +18,21 @@ class AiChatController extends Controller
             'message' => 'required|string'
         ]);
 
+        $apiKey = config('services.groq.key') ?: env('GROQ_API_KEY');
+
+        if (empty($apiKey)) {
+            return response()->json([
+                'reply' => "⚠️ **GROQ_API_KEY belum diatur!**\n\nSilakan tambahkan API key Groq di file `.env`:\n```env\nGROQ_API_KEY=gsk_xxxxxxxxxxxx\n```\nAnda bisa mendapatkan API key gratis di [console.groq.com/keys](https://console.groq.com/keys)."
+            ], 400);
+        }
+
+        $model = config('services.groq.model', 'openai/gpt-oss-120b');
+
         // Kita tambahkan withoutVerifying() untuk mengatasi masalah SSL di localhost Windows
         $response = Http::withoutVerifying()
-            ->withToken(env('GROQ_API_KEY'))
+            ->withToken($apiKey)
             ->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model' => 'openai/gpt-oss-120b', // Model Groq yang kita gunakan
+                'model' => $model,
                 'messages' => [
                     [
                         'role' => 'system', 
@@ -37,13 +47,14 @@ class AiChatController extends Controller
 
         if ($response->successful()) {
             return response()->json([
-                'reply' => $response->json()['choices'][0]['message']['content']
+                'reply' => $response->json()['choices'][0]['message']['content'] ?? 'Tidak ada respon dari AI.'
             ]);
         }
 
-        // KITA UBAH BAGIAN ERROR-NYA: Biar Groq ngasih tau masalah aslinya apa
+        $errorMessage = $response->json()['error']['message'] ?? $response->body();
+
         return response()->json([
-            'reply' => 'Error Asli dari Groq: ' . $response->body()
+            'reply' => 'Error dari Groq: ' . $errorMessage
         ], 500);
     }
 }   

@@ -566,23 +566,65 @@
     <div x-data="{
         display: '0',
         history: '',
+        rawHistory: '',
         waitingForNext: false,
-        appendNum(n) { if (this.waitingForNext) { this.display = n; this.waitingForNext = false; } else { this.display = this.display === '0' ? n : this.display + n; } },
-        appendDot() { if (this.waitingForNext) { this.display = '0.'; this.waitingForNext = false; return; } if (!this.display.includes('.')) { this.display += '.'; } },
-        setOp(op) { this.history = this.display + ' ' + op + ' '; this.waitingForNext = true; },
-        clearAll() { this.display = '0'; this.history = ''; this.waitingForNext = false; },
-        backspace() { if (this.waitingForNext) return; this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0'; },
-        percent() { this.display = (parseFloat(this.display) / 100).toString(); },
+        formatNum(val) {
+            if (!val || val === 'Error') return val;
+            let parts = val.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
+        },
+        appendNum(n) {
+            if (this.waitingForNext) {
+                this.display = n;
+                this.waitingForNext = false;
+            } else {
+                let digitCount = this.display.replace(/[^0-9]/g, '').length;
+                if (digitCount >= 12) return;
+                this.display = this.display === '0' ? n : this.display + n;
+            }
+        },
+        appendDot() {
+            if (this.waitingForNext) {
+                this.display = '0.';
+                this.waitingForNext = false;
+                return;
+            }
+            if (!this.display.includes('.')) {
+                this.display += '.';
+            }
+        },
+        setOp(op) {
+            this.rawHistory = this.display + ' ' + op + ' ';
+            this.history = this.formatNum(this.display) + ' ' + op + ' ';
+            this.waitingForNext = true;
+        },
+        clearAll() {
+            this.display = '0';
+            this.history = '';
+            this.rawHistory = '';
+            this.waitingForNext = false;
+        },
+        backspace() {
+            if (this.waitingForNext) return;
+            this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0';
+        },
+        percent() {
+            this.display = (parseFloat(this.display) / 100).toString();
+        },
         calculate() {
-            if (!this.history || this.waitingForNext) return;
-            let fullExpr = this.history + this.display;
-            let cleanExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/');
+            if (!this.rawHistory || this.waitingForNext) return;
+            let fullRawExpr = this.rawHistory + this.display;
+            let cleanExpr = fullRawExpr.replace(/×/g, '*').replace(/÷/g, '/');
             try {
                 let res = eval(cleanExpr);
-                this.history = fullExpr + ' =';
+                this.history = this.history + this.formatNum(this.display) + ' =';
+                this.rawHistory = '';
                 this.display = Number.isInteger(res) ? res.toString() : parseFloat(res.toFixed(4)).toString();
                 this.waitingForNext = true;
-            } catch (e) { this.display = 'Error'; }
+            } catch (e) {
+                this.display = 'Error';
+            }
         }
     }" x-show="showCalculator" x-cloak 
         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -599,7 +641,7 @@
         
         <div class="bg-gray-50 dark:bg-[#000F0F] border border-gray-100 dark:border-[#002525] rounded-2xl p-3 mb-3 text-right">
             <div class="text-xs text-gray-400 h-4 overflow-x-auto font-mono" x-text="history"></div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate tracking-wider font-mono" x-text="display"></div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate tracking-wider font-mono" x-text="formatNum(display)"></div>
         </div>
 
         <div class="grid grid-cols-4 gap-2 text-sm font-bold">

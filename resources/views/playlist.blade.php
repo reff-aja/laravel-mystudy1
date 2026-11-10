@@ -17,6 +17,7 @@
     </script>
 </head>
 <body class="grid-canvas font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen transition-colors duration-300">
+    @include('components.page-skeleton', ['page' => 'playlist'])
 
     {{-- NAVBAR ATAS --}}
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525] transition-colors duration-300">

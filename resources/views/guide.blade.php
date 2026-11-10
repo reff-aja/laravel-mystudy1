@@ -34,6 +34,7 @@
 </head>
 
 <body class="font-sans antialiased text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-[#000F0F] min-h-screen relative overflow-x-hidden selection:bg-[#68C7EC]/30 selection:text-white transition-colors duration-300">
+    @include('components.page-skeleton', ['page' => 'guide'])
 
     {{-- AMBIENT BACKGROUND --}}
     <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">

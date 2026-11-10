@@ -32,6 +32,7 @@
 </head>
 
 <body class="font-sans antialiased text-gray-100 bg-[#000000] h-screen flex overflow-hidden">
+    @include('components.page-skeleton', ['page' => 'ai-chat'])
 
     {{-- SIDEBAR HISTORY --}}
     <aside class="w-80 bg-[#0a0a0a] border-r border-gray-800 flex flex-col hidden md:flex h-full shrink-0">

@@ -61,9 +61,27 @@
     x-data="{ 
         userDropdown: false, 
         showCalculator: false,
-        layoutMode: localStorage.getItem('mystudy-layout') || 'bento'
+        calculatorLoading: false,
+        openCalculator() {
+            this.showCalculator = true;
+            this.calculatorLoading = true;
+            setTimeout(() => { this.calculatorLoading = false; }, 400);
+        },
+        layoutMode: localStorage.getItem('mystudy-layout') || 'bento',
+        isLoading: true,
+        startLoading() {
+            this.isLoading = true;
+            // Simulasi loading 600ms (0.6 detik) biar UX kerasa smooth
+            setTimeout(() => { this.isLoading = false; }, 600);
+        }
     }"
-    x-init="$watch('layoutMode', val => localStorage.setItem('mystudy-layout', val))">
+    x-init="
+        startLoading();
+        $watch('layoutMode', val => {
+            localStorage.setItem('mystudy-layout', val);
+            startLoading(); // Panggil skeleton lagi tiap ganti UI
+        })
+    ">
 
     {{-- AMBIENT BACKGROUND ANIMATION --}}
     <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none" x-show="layoutMode === 'bento'">
@@ -85,7 +103,7 @@
     {{-- ========================================== --}}
     <div x-show="layoutMode === 'bento'" x-cloak>
         
-        {{-- NAVBAR BENTO --}}
+        {{-- NAVBAR BENTO (TETAP TAMPIL SAAT LOADING) --}}
         <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#000F0F]/80 backdrop-blur-md border-b border-gray-200 dark:border-[#002525] transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex min-w-0 justify-between h-16 items-center">
@@ -127,7 +145,7 @@
 
                             <div x-show="userDropdown" style="display: none;" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#001818] rounded-xl shadow-lg border border-gray-100 dark:border-[#002525] py-1 z-50">
                                 <a href="{{ route('profile.edit') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium"><span>Pengaturan Profil</span></a>
-                                <button @click="showCalculator = !showCalculator; userDropdown = false" class="w-full flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium text-left"><span>Kalkulator Cepat</span></button>
+                                <button @click="showCalculator ? showCalculator = false : openCalculator(); userDropdown = false" class="w-full flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium text-left"><span>Kalkulator Cepat</span></button>
                                 <a href="{{ route('ai-chat') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium"><span>Chat AI</span></a>
                                 <a href="{{ route('playlist') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium"><span>Playlist Musik</span></a>
                                 <a href="{{ route('guide') }}" class="flex items-center justify-between px-4 py-2 text-sm text-[#68C7EC] hover:bg-[#68C7EC]/10 transition-colors font-medium"><span>Buku Panduan</span></a>
@@ -144,8 +162,30 @@
             </div>
         </nav>
 
-        {{-- AREA UTAMA BENTO --}}
-        <main class="relative z-10 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {{-- SKELETON SCREEN BENTO (TAMPIL SAAT isLoading = true) --}}
+        <main x-show="isLoading" class="relative z-10 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 animate-pulse" x-cloak>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                <div>
+                    <div class="h-8 w-64 bg-gray-200 dark:bg-[#002525] rounded-xl mb-3"></div>
+                    <div class="h-4 w-40 bg-gray-200 dark:bg-[#002525] rounded-lg"></div>
+                </div>
+                <div class="h-20 w-full sm:w-64 bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+            </div>
+            <div class="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
+                <div class="min-w-0 lg:col-span-2 flex flex-col gap-6">
+                    <div class="h-16 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+                    <div class="h-[400px] w-full bg-gray-200 dark:bg-[#002525] rounded-3xl"></div>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <div class="h-32 w-full bg-gray-200 dark:bg-[#002525] rounded-3xl"></div>
+                    <div class="h-48 w-full bg-gray-200 dark:bg-[#002525] rounded-3xl"></div>
+                    <div class="h-40 w-full bg-gray-200 dark:bg-[#002525] rounded-3xl"></div>
+                </div>
+            </div>
+        </main>
+
+        {{-- AREA UTAMA BENTO (KONTEN ASLI, TAMPIL SAAT isLoading = false) --}}
+        <main x-show="!isLoading" class="relative z-10 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10" x-cloak>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex flex-wrap items-center gap-x-1">
@@ -304,7 +344,7 @@
     {{-- ========================================== --}}
     <div x-show="layoutMode === 'pro'" class="flex h-screen w-full bg-gray-50 dark:bg-[#000808]" x-cloak>
         
-        {{-- SIDEBAR KIRI --}}
+        {{-- SIDEBAR KIRI (TETAP TAMPIL SAAT LOADING) --}}
         <aside class="w-64 bg-white dark:bg-[#001212] border-r border-gray-200 dark:border-[#002525] flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-hidden shadow-sm z-50">
             <div class="p-6 overflow-y-auto h-full scrollbar-hide">
                 <a href="{{ route('dashboard') }}" class="font-extrabold text-2xl text-[#68C7EC] flex items-center gap-2 mb-10 hover:scale-105 transition-transform">
@@ -318,7 +358,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                         Dashboard
                     </a>
-                    <button @click="showCalculator = true" class="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#002020] rounded-xl font-medium transition-colors text-left">
+                    <button @click="openCalculator()" class="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#002020] rounded-xl font-medium transition-colors text-left">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         Kalkulator
                     </button>
@@ -337,8 +377,8 @@
                 </nav>
             </div>
             
-            <div class="p-6 border-t border-gray-200 dark:border-[#002525] space-y-3 shrink-0 bg-white dark:bg-[#001212]">
-                <div class="flex items-center gap-3 pt-2">
+            <div class="p-6 border-t border-gray-200 dark:border-[#002525] shrink-0 bg-white dark:bg-[#001212]">
+                <div class="flex items-center gap-3">
                     <a href="{{ route('profile.edit') }}">
                         @if (Auth::user()->profile_photo_path)
                             <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-10 h-10 rounded-full object-cover">
@@ -357,8 +397,31 @@
             </div>
         </aside>
 
-        {{-- MAIN CONTENT AREA --}}
-        <main class="flex-1 overflow-y-auto p-8 relative">
+        {{-- SKELETON SCREEN PRO (TAMPIL SAAT isLoading = true) --}}
+        <main x-show="isLoading" class="flex-1 overflow-y-auto p-8 relative animate-pulse" x-cloak>
+            <div class="flex justify-between items-center mb-8 gap-4">
+                <div>
+                    <div class="h-8 w-64 bg-gray-200 dark:bg-[#002525] rounded-xl mb-3"></div>
+                    <div class="h-4 w-40 bg-gray-200 dark:bg-[#002525] rounded-lg"></div>
+                </div>
+                <div class="flex gap-2">
+                    <div class="h-10 w-10 bg-gray-200 dark:bg-[#002525] rounded-full"></div>
+                    <div class="h-10 w-10 bg-gray-200 dark:bg-[#002525] rounded-full"></div>
+                    <div class="h-10 w-10 bg-gray-200 dark:bg-[#002525] rounded-full"></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="h-24 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+                <div class="h-24 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+                <div class="h-24 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+                <div class="h-24 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+            </div>
+            <div class="h-20 w-full bg-gray-200 dark:bg-[#002525] rounded-2xl mb-8"></div>
+            <div class="h-[400px] w-full bg-gray-200 dark:bg-[#002525] rounded-2xl"></div>
+        </main>
+
+        {{-- MAIN CONTENT AREA PRO (KONTEN ASLI, TAMPIL SAAT isLoading = false) --}}
+        <main x-show="!isLoading" class="flex-1 overflow-y-auto p-8 relative" x-cloak>
             <div class="flex justify-between items-center mb-8 gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Selamat Malam, {{ explode(' ', Auth::user()->name)[0] }}!</h1>
@@ -367,18 +430,15 @@
                 
                 {{-- KUMPULAN TOMBOL HEADER PRO MODE --}}
                 <div class="flex items-center gap-1 sm:gap-2">
-                    {{-- Tombol Switch UI (ke Bento) --}}
                     <button @click="layoutMode = 'bento'" class="shrink-0 p-2 text-gray-400 hover:text-[#68C7EC] dark:text-gray-500 dark:hover:text-[#68C7EC] hover:bg-gray-100 dark:hover:bg-[#002525] rounded-full transition-colors flex items-center" title="Kembali ke UI Estetik">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     </button>
 
-                    {{-- Tombol Tema --}}
                     <button id="theme-toggle-pro-header" class="shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#002525] rounded-full transition-colors">
                         <svg class="theme-icon-light hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
                         <svg class="theme-icon-dark hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
                     </button>
 
-                    {{-- Tombol Pengingat (Reminder) --}}
                     <button id="reminder-toggle-pro" type="button"
                         class="relative shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:text-[#68C7EC] dark:hover:text-[#68C7EC] hover:bg-gray-100 dark:hover:bg-[#002525] rounded-full transition-colors"
                         aria-label="Buka pengingat tugas" aria-expanded="false">
@@ -566,65 +626,23 @@
     <div x-data="{
         display: '0',
         history: '',
-        rawHistory: '',
         waitingForNext: false,
-        formatNum(val) {
-            if (!val || val === 'Error') return val;
-            let parts = val.toString().split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return parts.join(',');
-        },
-        appendNum(n) {
-            if (this.waitingForNext) {
-                this.display = n;
-                this.waitingForNext = false;
-            } else {
-                let digitCount = this.display.replace(/[^0-9]/g, '').length;
-                if (digitCount >= 12) return;
-                this.display = this.display === '0' ? n : this.display + n;
-            }
-        },
-        appendDot() {
-            if (this.waitingForNext) {
-                this.display = '0.';
-                this.waitingForNext = false;
-                return;
-            }
-            if (!this.display.includes('.')) {
-                this.display += '.';
-            }
-        },
-        setOp(op) {
-            this.rawHistory = this.display + ' ' + op + ' ';
-            this.history = this.formatNum(this.display) + ' ' + op + ' ';
-            this.waitingForNext = true;
-        },
-        clearAll() {
-            this.display = '0';
-            this.history = '';
-            this.rawHistory = '';
-            this.waitingForNext = false;
-        },
-        backspace() {
-            if (this.waitingForNext) return;
-            this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0';
-        },
-        percent() {
-            this.display = (parseFloat(this.display) / 100).toString();
-        },
+        appendNum(n) { if (this.waitingForNext) { this.display = n; this.waitingForNext = false; } else { this.display = this.display === '0' ? n : this.display + n; } },
+        appendDot() { if (this.waitingForNext) { this.display = '0.'; this.waitingForNext = false; return; } if (!this.display.includes('.')) { this.display += '.'; } },
+        setOp(op) { this.history = this.display + ' ' + op + ' '; this.waitingForNext = true; },
+        clearAll() { this.display = '0'; this.history = ''; this.waitingForNext = false; },
+        backspace() { if (this.waitingForNext) return; this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0'; },
+        percent() { this.display = (parseFloat(this.display) / 100).toString(); },
         calculate() {
-            if (!this.rawHistory || this.waitingForNext) return;
-            let fullRawExpr = this.rawHistory + this.display;
-            let cleanExpr = fullRawExpr.replace(/×/g, '*').replace(/÷/g, '/');
+            if (!this.history || this.waitingForNext) return;
+            let fullExpr = this.history + this.display;
+            let cleanExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/');
             try {
                 let res = eval(cleanExpr);
-                this.history = this.history + this.formatNum(this.display) + ' =';
-                this.rawHistory = '';
+                this.history = fullExpr + ' =';
                 this.display = Number.isInteger(res) ? res.toString() : parseFloat(res.toFixed(4)).toString();
                 this.waitingForNext = true;
-            } catch (e) {
-                this.display = 'Error';
-            }
+            } catch (e) { this.display = 'Error'; }
         }
     }" x-show="showCalculator" x-cloak 
         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -639,9 +657,19 @@
             <button @click="showCalculator = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#002525] transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         
+        <div x-show="calculatorLoading" class="space-y-3 animate-pulse" aria-label="Memuat kalkulator">
+            <div class="h-16 rounded-2xl bg-gray-100 dark:bg-[#000F0F]"></div>
+            <div class="grid grid-cols-4 gap-2">
+                @foreach (range(1, 16) as $key)
+                    <div class="h-10 rounded-xl bg-gray-100 dark:bg-[#002525]"></div>
+                @endforeach
+            </div>
+        </div>
+
+        <div x-show="!calculatorLoading">
         <div class="bg-gray-50 dark:bg-[#000F0F] border border-gray-100 dark:border-[#002525] rounded-2xl p-3 mb-3 text-right">
             <div class="text-xs text-gray-400 h-4 overflow-x-auto font-mono" x-text="history"></div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate tracking-wider font-mono" x-text="formatNum(display)"></div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate tracking-wider font-mono" x-text="display"></div>
         </div>
 
         <div class="grid grid-cols-4 gap-2 text-sm font-bold">
@@ -665,24 +693,23 @@
             <button @click="appendDot()" class="p-2.5 bg-gray-100 dark:bg-[#002525] hover:bg-gray-200 dark:hover:bg-[#003030] text-gray-900 dark:text-white rounded-xl transition-all">.</button>
             <button @click="calculate()" class="p-2.5 bg-[#68C7EC] text-[#000F0F] hover:brightness-110 rounded-xl transition-all">=</button>
         </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Update Ikon Tema Secara Sinkron
             function updateThemeIcons() {
                 const isDark = document.documentElement.classList.contains('dark');
                 document.querySelectorAll('.theme-icon-dark').forEach(el => {
-                    if (isDark) el.classList.add('hidden'); // Sembunyikan bulan saat dark mode
-                    else el.classList.remove('hidden'); // Tampilkan bulan saat light mode
+                    if (isDark) el.classList.add('hidden');
+                    else el.classList.remove('hidden');
                 });
                 document.querySelectorAll('.theme-icon-light').forEach(el => {
-                    if (isDark) el.classList.remove('hidden'); // Tampilkan matahari saat dark mode
-                    else el.classList.add('hidden'); // Sembunyikan matahari saat light mode
+                    if (isDark) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
                 });
             }
 
-            // Fungsi Global Klik Toggle Tema
             function setupThemeToggle(btnId) {
                 const btn = document.getElementById(btnId);
                 if (btn) {
@@ -704,16 +731,14 @@
                                 localStorage.setItem('color-theme', 'dark');
                             }
                         }
-                        updateThemeIcons(); // Update semua ikon secara instan
+                        updateThemeIcons();
                     });
                 }
             }
 
-            // Set up semua tombol ganti tema di berbagai tempat
             setupThemeToggle('theme-toggle-bento');
-            setupThemeToggle('theme-toggle-pro-sidebar');
             setupThemeToggle('theme-toggle-pro-header');
-            updateThemeIcons(); // Jalankan sekali saat load agar ikon sesuai tema saat ini
+            updateThemeIcons();
 
             const deleteToast = document.getElementById('delete-confirm-toast');
             const deleteBackdrop = document.getElementById('delete-modal-backdrop');
@@ -772,7 +797,6 @@
                 }
             });
 
-            // Handle Reminder Toggle for both Bento and Pro buttons
             const reminderToggleBento = document.getElementById('reminder-toggle-bento');
             const reminderTogglePro = document.getElementById('reminder-toggle-pro');
             const reminderPanel = document.getElementById('reminder-panel');

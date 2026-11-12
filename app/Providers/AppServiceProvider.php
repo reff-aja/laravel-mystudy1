@@ -24,7 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
-        
+        }
+
         // Mengubah format email Reset Password bawaan Laravel
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
             return (new MailMessage)

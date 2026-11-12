@@ -33,7 +33,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
 
 # Atur izin folder storage dan bootstrap cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
 
 # Konfigurasi DocumentRoot Apache ke folder public Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public

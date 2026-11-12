@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Install Node.js untuk compile Vite assets
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -24,8 +28,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . /var/www/html
 
-# Install dependencies PHP
+# Install dependencies PHP & Node.js, lalu build Vite assets
 RUN composer install --no-dev --optimize-autoloader
+RUN npm install && npm run build
 
 # Atur izin folder storage dan bootstrap cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -44,5 +49,4 @@ RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 10000
 
-# Jalankan lewat file start.sh
 CMD ["start.sh"]

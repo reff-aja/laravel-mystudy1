@@ -225,16 +225,42 @@
 
         <div class="shrink-0 p-4 md:p-6 bg-gradient-to-t from-[#000000] to-transparent w-full">
             <div class="max-w-4xl mx-auto relative">
-                <div x-show="selectedFile"
-                    class="absolute -top-12 left-0 bg-[#202020] text-xs text-gray-300 px-4 py-2 rounded-lg border border-gray-700 flex items-center gap-2 shadow-lg">
-                    <span class="truncate max-w-[200px]" x-text="selectedFile"></span>
-                    <button @click="selectedFile = null"
-                        class="text-red-400 hover:text-red-300 font-bold">&times;</button>
+                {{-- PREVIEW LAMPIRAN DI ATAS KOLOM PESAN --}}
+                <div x-show="selectedFile" x-cloak
+                    class="mb-3 flex items-start gap-3 p-3 bg-[#121212] border border-gray-800 rounded-xl shadow-lg max-w-full">
+
+                    {{-- Preview isi gambar JPG/PNG/WEBP --}}
+                    <template x-if="selectedFilePreview">
+                        <img :src="selectedFilePreview" :alt="selectedFile"
+                            class="w-24 h-24 object-cover rounded-lg border border-gray-700 shrink-0">
+                    </template>
+
+                    {{-- Kartu dokumen PDF --}}
+                    <template x-if="!selectedFilePreview">
+                        <div class="w-16 h-16 rounded-lg bg-red-500/10 border border-red-500/30 flex flex-col items-center justify-center shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24"
+                                fill="none" stroke="#f87171" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <path d="M14 2v6h6"></path>
+                                <path d="M8 15h8M8 18h5"></path>
+                            </svg>
+                            <span class="text-[9px] font-bold text-red-400 mt-0.5">PDF</span>
+                        </div>
+                    </template>
+
+                    <div class="min-w-0 flex-1 py-1">
+                        <p class="text-xs font-semibold text-white truncate" x-text="selectedFile"></p>
+                        <p class="text-[11px] text-gray-500 mt-1"
+                            x-text="selectedFilePreview ? 'Gambar siap dikirim' : 'Dokumen PDF siap dikirim'"></p>
+                    </div>
+
+                    <button type="button" @click="removeSelectedFile()" aria-label="Hapus lampiran"
+                        class="text-gray-500 hover:text-red-400 text-xl leading-none px-2">&times;</button>
                 </div>
                 <form @submit.prevent="sendMessage"
                     class="flex items-center gap-2 bg-[#121212] border border-gray-800 rounded-2xl p-2 shadow-2xl focus-within:border-[#68C7EC] transition-colors">
                     <input type="file" id="file-upload" class="hidden" @change="handleFileUpload"
-                        accept="image/*,video/*,audio/*,.pdf">
+                        accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
                     <button type="button" @click="document.getElementById('file-upload').click()"
                         class="p-3 text-gray-400 hover:text-[#68C7EC] transition-colors rounded-xl hover:bg-[#202020]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -406,6 +432,8 @@
                 newMessage: '',
                 isLoading: false,
                 selectedFile: null,
+                selectedFileObject: null,
+                selectedFilePreview: null,
                 userName: "{{ explode(' ', Auth::user()->name)[0] }}",
 
                 // State untuk Edit Judul
@@ -512,128 +540,105 @@
                     this.chatToDelete = null;
                 },
 
-                // Simpan data base64 gambar
-                selectedFile: null,
-                selectedImageBase64: null,
-
+                // Upload gambar/PDF untuk dikirim sebagai multipart FormData ke Laravel.
                 handleFileUpload(e) {
                     const file = e.target.files[0];
-                    if (file) {
-                        this.selectedFile = file.name;
-                        const reader = new FileReader();
-                        reader.onload = (uploadEvent) => {
-                            this.selectedImageBase64 = uploadEvent.target.result; // Format Base64 lengkap dengan prefix-nya
-                        };
-                        reader.readAsDataURL(file);
+                    if (!file) return;
+
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Format file belum didukung. Gunakan JPG, PNG, WEBP, atau PDF.');
+                        e.target.value = '';
+                        return;
                     }
+
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('Ukuran file maksimal 10 MB.');
+                        e.target.value = '';
+                        return;
+                    }
+
+                    this.removeSelectedFile();
+                    this.selectedFileObject = file;
+                    this.selectedFile = file.name;
+
+                    // Buat preview lokal hanya untuk gambar; PDF memakai kartu dokumen.
+                    if (file.type.startsWith('image/')) {
+                        this.selectedFilePreview = URL.createObjectURL(file);
+                    }
+                },
+
+                removeSelectedFile() {
+                    if (this.selectedFilePreview) {
+                        URL.revokeObjectURL(this.selectedFilePreview);
+                    }
+                    this.selectedFile = null;
+                    this.selectedFileObject = null;
+                    this.selectedFilePreview = null;
+                    const input = document.getElementById('file-upload');
+                    if (input) input.value = '';
                 },
 
                 startNewChat() {
                     this.currentChatId = null;
                     this.newMessage = '';
-                    this.selectedFile = null;
-                    this.selectedImageBase64 = null;
+                    this.removeSelectedFile();
                 },
 
                 async sendMessage() {
-                    if (this.newMessage.trim() === '' && !this.selectedFile) return;
+                    if (this.newMessage.trim() === '' && !this.selectedFileObject) return;
 
-                    const userText = this.newMessage;
+                    const userText = this.newMessage.trim();
+                    const file = this.selectedFileObject;
                     const attached = this.selectedFile;
-                    const imageBase64 = this.selectedImageBase64;
 
                     if (!this.currentChatId) {
                         this.currentChatId = Date.now();
                         this.chats.unshift({
                             id: this.currentChatId,
-                            title: userText ? userText.substring(0, 25) + '...' : 'Analisis Gambar',
+                            title: userText ? userText.substring(0, 25) + (userText.length > 25 ? '...' : '') : (attached || 'Pesan Baru'),
                             isPinned: false,
                             messages: []
                         });
                     }
 
                     const currentChat = this.chats.find(c => c.id === this.currentChatId);
-                    currentChat.messages.push({ role: 'user', content: userText, attachment: attached });
+                    currentChat.messages.push({ role: 'user', content: userText || (attached ? 'Tolong analisis file ini.' : ''), attachment: attached });
 
                     this.newMessage = '';
-                    this.selectedFile = null;
-                    this.selectedImageBase64 = null;
+                    this.removeSelectedFile();
                     this.isLoading = true;
-
                     this.saveHistory();
                     this.scrollToBottom();
 
                     try {
+                        const formData = new FormData();
+                        formData.append('message', userText);
+                        if (file) formData.append('file', file);
+
                         const response = await fetch("{{ route('ai-chat.send') }}", {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                            body: JSON.stringify({
-                                message: userText,
-                                image: imageBase64 // Kirim data gambar ke backend
-                            })
+                            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            body: formData
                         });
+
                         const data = await response.json();
-                        currentChat.messages.push({ role: 'assistant', content: data.reply || 'Ada masalah server bro.' });
+                        if (!response.ok) {
+                            throw new Error(data.message || data.reply || 'File atau pesan gagal diproses.');
+                        }
+                        currentChat.messages.push({ role: 'assistant', content: data.reply || 'AI belum memberikan jawaban.' });
                     } catch (error) {
-                        currentChat.messages.push({ role: 'assistant', content: 'Gagal terhubung ke server.' });
+                        currentChat.messages.push({ role: 'assistant', content: error.message || 'Gagal terhubung ke server.' });
+                    } finally {
+                        this.isLoading = false;
+                        this.saveHistory();
+                        this.scrollToBottom();
                     }
-
-                    this.isLoading = false;
-                    this.saveHistory();
-                    this.scrollToBottom();
-                },
-
-                startNewChat() {
-                    this.currentChatId = null;
-                    this.newMessage = '';
-                    this.selectedFile = null;
                 },
 
                 selectChat(id) {
                     if (this.editingId) return; // Cegah pindah chat saat lagi ngetik edit
                     this.currentChatId = id;
-                    this.scrollToBottom();
-                },
-
-                async sendMessage() {
-                    if (this.newMessage.trim() === '' && !this.selectedFile) return;
-
-                    const userText = this.newMessage;
-                    const attached = this.selectedFile;
-
-                    if (!this.currentChatId) {
-                        this.currentChatId = Date.now();
-                        this.chats.unshift({
-                            id: this.currentChatId,
-                            title: userText ? userText.substring(0, 25) + '...' : 'Pesan Baru',
-                            isPinned: false,
-                            messages: []
-                        });
-                    }
-
-                    const currentChat = this.chats.find(c => c.id === this.currentChatId);
-                    currentChat.messages.push({ role: 'user', content: userText, attachment: attached });
-                    this.newMessage = '';
-                    this.selectedFile = null;
-                    this.isLoading = true;
-
-                    this.saveHistory();
-                    this.scrollToBottom();
-
-                    try {
-                        const response = await fetch("{{ route('ai-chat.send') }}", {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                            body: JSON.stringify({ message: attached ? `[Lampiran: ${attached}] ` + userText : userText })
-                        });
-                        const data = await response.json();
-                        currentChat.messages.push({ role: 'assistant', content: data.reply || 'Ada masalah server bro.' });
-                    } catch (error) {
-                        currentChat.messages.push({ role: 'assistant', content: 'Gagal terhubung ke server.' });
-                    }
-
-                    this.isLoading = false;
-                    this.saveHistory();
                     this.scrollToBottom();
                 },
 
